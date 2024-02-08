@@ -10,6 +10,11 @@
     "files": [],
     "folders": [
       {
+        "name": "::CMSIS",
+        "files": [],
+        "folders": []
+      },
+      {
         "name": "Application",
         "files": [],
         "folders": [
@@ -46,9 +51,30 @@
         ]
       },
       {
+        "name": "Core",
+        "files": [
+          {
+            "path": "Source/core.c"
+          },
+          {
+            "path": "Source/shell.c"
+          }
+        ],
+        "folders": []
+      },
+      {
         "name": "Drivers",
         "files": [],
         "folders": [
+          {
+            "name": "CMSIS",
+            "files": [
+              {
+                "path": "STM32Cube/Core/Src/system_stm32f4xx.c"
+              }
+            ],
+            "folders": []
+          },
           {
             "name": "STM32F4xx_HAL_Driver",
             "files": [
@@ -258,31 +284,32 @@
               }
             ],
             "folders": []
-          },
+          }
+        ]
+      },
+      {
+        "name": "libs",
+        "files": [],
+        "folders": [
           {
-            "name": "CMSIS",
+            "name": "lwrb",
             "files": [
               {
-                "path": "STM32Cube/Core/Src/system_stm32f4xx.c"
+                "path": "Libs/lwrb/src/lwrb/lwrb.c"
+              }
+            ],
+            "folders": []
+          },
+          {
+            "name": "lwshell",
+            "files": [
+              {
+                "path": "Libs/lwshell/src/lwshell/lwshell.c"
               }
             ],
             "folders": []
           }
         ]
-      },
-      {
-        "name": "Core",
-        "files": [
-          {
-            "path": "Source/core.c"
-          }
-        ],
-        "folders": []
-      },
-      {
-        "name": "::CMSIS",
-        "files": [],
-        "folders": []
       }
     ]
   },
@@ -299,56 +326,16 @@
       "compileConfig": {
         "cpuType": "Cortex-M4",
         "floatingPointHardware": "single",
-        "scatterFilePath": "",
         "useCustomScatterFile": false,
+        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
         "storageLayout": {
           "RAM": [
-            {
-              "tag": "RAM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
-            {
-              "tag": "RAM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "noInit": false
-            },
             {
               "tag": "IRAM",
               "id": 1,
               "mem": {
                 "startAddr": "0x20000000",
-                "size": "0x1c000"
-              },
-              "isChecked": true,
-              "noInit": false
-            },
-            {
-              "tag": "IRAM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x2001c000",
-                "size": "0x4000"
+                "size": "0x30000"
               },
               "isChecked": true,
               "noInit": false
@@ -356,54 +343,14 @@
           ],
           "ROM": [
             {
-              "tag": "ROM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
-              "tag": "ROM",
-              "id": 3,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
-            },
-            {
               "tag": "IROM",
               "id": 1,
               "mem": {
-                "startAddr": "0x8000000",
+                "startAddr": "0x08000000",
                 "size": "0x100000"
               },
               "isChecked": true,
               "isStartup": true
-            },
-            {
-              "tag": "IROM",
-              "id": 2,
-              "mem": {
-                "startAddr": "0x0",
-                "size": "0x0"
-              },
-              "isChecked": false,
-              "isStartup": false
             }
           ]
         },
@@ -418,7 +365,7 @@
           "cpuName": "STM32F405RG"
         },
         "proType": 1,
-        "speed": 8000,
+        "speed": 4000,
         "otherCmds": ""
       },
       "uploadConfigMap": {},
@@ -433,7 +380,9 @@
           "Include",
           ".cmsis/include",
           "RTE/_bleeding-rat",
-          ".eide/deps"
+          ".eide/deps",
+          "Libs/lwshell/src/include",
+          "Libs/lwrb/src/include"
         ],
         "libList": [],
         "sourceDirList": [],
