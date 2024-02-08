@@ -57,7 +57,16 @@
             "path": "Source/core.c"
           },
           {
+            "path": "Source/motord.c"
+          },
+          {
+            "path": "Source/move.c"
+          },
+          {
             "path": "Source/shell.c"
+          },
+          {
+            "path": "Source/system.c"
           }
         ],
         "folders": []
