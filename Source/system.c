@@ -4,6 +4,7 @@
 #include "shell.h"
 #include "core.h"
 #include "move.h"
+#include "imu.h"
 
 typedef StaticTask_t osStaticThreadDef_t;
 
@@ -46,11 +47,29 @@ inline void delay( uint32_t ms ){
 }
 
 void sys_init( void ){
-	shell_init();
-    shell_log("[shell] init ok");
-    osThreadNew(shellTask, NULL, &shellTask_attributes);
-    time_us_init();
-    shell_log("[timus] us timer init ok");
+    int res = 0;
+    res = shell_init();
+    if(res == 0){
+        shell_log("[shell] init ok");
+        osThreadNew(shellTask, NULL, &shellTask_attributes);
+    }else{
+        shell_log("[shell] init fault");
+    }
+    
+    res = time_us_init();
+    if(res == 0){
+        shell_log("[timus] init ok");
+    }else{
+        shell_log("[timus] init fault");
+    }
+    
+    res = imu_init();
+    if(res == 0){
+        shell_log("[imu] init ok");
+    }else{
+        shell_log("[imu] init fault");
+    }
+
     core_init();
     while(1){
         core_loop();

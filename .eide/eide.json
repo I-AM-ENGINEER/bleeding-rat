@@ -58,6 +58,12 @@
             "path": "Source/core.c"
           },
           {
+            "path": "Source/driver_mpu9250_interface.c"
+          },
+          {
+            "path": "Source/imu.c"
+          },
+          {
             "path": "Source/motord.c"
           },
           {
@@ -354,6 +360,18 @@
               }
             ],
             "folders": []
+          },
+          {
+            "name": "mpu6500",
+            "files": [
+              {
+                "path": "Libs/mpu9250-master/src/driver_mpu9250.c"
+              },
+              {
+                "path": "Source/driver_mpu9250_interface.c"
+              }
+            ],
+            "folders": []
           }
         ]
       }
@@ -433,7 +451,9 @@
           "Libs/lwrb/src/include",
           "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/include",
           "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
-          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"
+          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+          "Libs/mpu9250-master/src",
+          "Libs/mpu9250-master/interface"
         ],
         "libList": [],
         "sourceDirList": [],
