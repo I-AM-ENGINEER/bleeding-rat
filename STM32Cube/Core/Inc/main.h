@@ -59,7 +59,6 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define motor_pwm_freq 1000
 #define MP6500_CS_Pin GPIO_PIN_14
 #define MP6500_CS_GPIO_Port GPIOC
 #define HALL1_EXTI_Pin GPIO_PIN_0

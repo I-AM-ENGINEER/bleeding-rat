@@ -25,11 +25,16 @@ void motord_set_speed( motord_t* motord, float speed ){
         break_ch = motord->pin1_tim_channel;
     }
 
-    __HAL_TIM_SET_COMPARE(motord->timer, pwm_ch, compare_value);
-    if(motord->break_enable){
-        __HAL_TIM_SET_COMPARE(motord->timer, break_ch, UINT16_MAX-1);
-    }else{
-        __HAL_TIM_SET_COMPARE(motord->timer, break_ch, 0);
+    switch (motord->decay_mode){
+        case MOTOR_DECAY_FAST:
+            __HAL_TIM_SET_COMPARE(motord->timer, break_ch, UINT16_MAX-1);
+            __HAL_TIM_SET_COMPARE(motord->timer, pwm_ch, max_value-compare_value);
+            break;
+        case MOTOR_DECAY_SLOW:
+            __HAL_TIM_SET_COMPARE(motord->timer, break_ch, 0);
+            __HAL_TIM_SET_COMPARE(motord->timer, pwm_ch, compare_value);
+            break;
+        default: break;
     }
 }
 
@@ -39,7 +44,7 @@ int32_t motord_init( motord_t* motord, TIM_HandleTypeDef* timer, uint32_t pin1_t
     motord->timer = timer;
     motord->enable_port = enable_port;
     motord->enable_pin = enable_pin;
-    motord->break_enable = true;
+    motord->decay_mode = MOTOR_DECAY_SLOW;
     HAL_TIM_PWM_Start(timer, pin1_tim_channel);
     HAL_TIM_PWM_Start(timer, pin2_tim_channel);
     motord_enable(motord, false);
@@ -65,6 +70,6 @@ void motord_enable( motord_t* motord, bool enable ){
     #endif
 }
 
-void motord_set_break( motord_t* motord, bool active_break ){
-    motord->break_enable = active_break;
+void motord_set_decay( motord_t* motord, enum motor_decay_mode_e decay_mode ){
+    motord->decay_mode = decay_mode;
 }

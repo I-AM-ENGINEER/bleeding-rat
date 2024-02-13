@@ -1,7 +1,25 @@
 #include "stm32f4xx.h"
+#include "cmsis_os.h"
 #include "system.h"
 #include "shell.h"
+#include "core.h"
 #include "move.h"
+
+typedef StaticTask_t osStaticThreadDef_t;
+
+osThreadId_t shellTaskHandle;
+uint32_t shellTaskBuffer[ 128 ];
+osStaticThreadDef_t shellTaskControlBlock;
+const osThreadAttr_t shellTask_attributes = {
+  .name = "shellTask",
+  .cb_mem = &shellTaskControlBlock,
+  .cb_size = sizeof(shellTaskControlBlock),
+  .stack_mem = &shellTaskBuffer[0],
+  .stack_size = sizeof(shellTaskBuffer),
+  .priority = (osPriority_t) osPriorityLow,
+};
+
+void shellTask( void *args );
 
 extern TIM_HandleTypeDef SYSTEM_TIMER_US;
 
@@ -23,18 +41,26 @@ void delay_us( uint32_t us ){
     while(((uint32_t)time_us() - start_us) < us){};
 }
 
-void delay_ms( uint32_t ms ){
-    uint32_t start_ms = (uint32_t)time_ms();
-    while((time_ms() - start_ms) < ms){
-        shell_process();
-    };
+inline void delay( uint32_t ms ){
+    osDelay(ms);
 }
 
-int32_t sys_init( void ){
-    time_us_init();
+void sys_init( void ){
 	shell_init();
-    shell_log("[timus] us timer init ok");
     shell_log("[shell] init ok");
-	move_init();
-	shell_log("[move] init ok");
+    osThreadNew(shellTask, NULL, &shellTask_attributes);
+    time_us_init();
+    shell_log("[timus] us timer init ok");
+    core_init();
+    while(1){
+        core_loop();
+    }
+}
+
+void shellTask( void *args ){
+    shell_log("[shell] task started");
+    while(1){
+        shell_process();
+        osDelay(10);
+    }
 }

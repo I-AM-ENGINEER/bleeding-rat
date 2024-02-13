@@ -27,8 +27,7 @@ typedef struct{
 } move_t;
 
 
-
-int32_t move_init( void );
+int32_t move_init( enum motor_decay_mode_e decay_mode );
 void move_permit( bool permission );
 void move_set_speed( float speed_l, float speed_r );
 

@@ -10,11 +10,6 @@
     "files": [],
     "folders": [
       {
-        "name": "::CMSIS",
-        "files": [],
-        "folders": []
-      },
-      {
         "name": "Application",
         "files": [],
         "folders": [
@@ -35,10 +30,16 @@
                 "name": "Generated",
                 "files": [
                   {
+                    "path": "STM32Cube/Core/Src/freertos.c"
+                  },
+                  {
                     "path": "STM32Cube/Core/Src/main.c"
                   },
                   {
                     "path": "STM32Cube/Core/Src/stm32f4xx_hal_msp.c"
+                  },
+                  {
+                    "path": "STM32Cube/Core/Src/stm32f4xx_hal_timebase_tim.c"
                   },
                   {
                     "path": "STM32Cube/Core/Src/stm32f4xx_it.c"
@@ -297,6 +298,42 @@
         ]
       },
       {
+        "name": "FreeRTOS",
+        "files": [
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/croutine.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/list.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/queue.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/tasks.c"
+          },
+          {
+            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/timers.c"
+          }
+        ],
+        "folders": []
+      },
+      {
         "name": "libs",
         "files": [],
         "folders": [
@@ -330,7 +367,9 @@
   },
   "targets": {
     "bleeding-rat": {
-      "excludeList": [],
+      "excludeList": [
+        "<virtual_root>/::CMSIS"
+      ],
       "toolchain": "AC6",
       "compileConfig": {
         "cpuType": "Cortex-M4",
@@ -374,7 +413,7 @@
           "cpuName": "STM32F405RG"
         },
         "proType": 1,
-        "speed": 4000,
+        "speed": 1000,
         "otherCmds": ""
       },
       "uploadConfigMap": {},
@@ -391,7 +430,10 @@
           "RTE/_bleeding-rat",
           ".eide/deps",
           "Libs/lwshell/src/include",
-          "Libs/lwrb/src/include"
+          "Libs/lwrb/src/include",
+          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/include",
+          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
+          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F"
         ],
         "libList": [],
         "sourceDirList": [],
