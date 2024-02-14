@@ -124,6 +124,34 @@ uint8_t mpu9250_interface_spi_deinit(void)
     return 0;
 }
 
+static osThreadId_t thread_id;
+enum send_state_e {
+    SEND_NONE,
+    SEND_TX_ADDR,
+    SEND_RX_ADDR,
+    SEND_TX_DATA,
+    SEND_RX_DATA,
+};
+
+static uint8_t* rx_buffer;
+static uint8_t* tx_buffer;
+static size_t rx_len;
+static size_t tx_len;
+
+volatile enum send_state_e send_state = SEND_NONE;
+
+void HAL_SPI_RxCpltCallback( SPI_HandleTypeDef *hspi ){
+    if(send_state == SEND_RX_DATA){
+        osThreadFlagsSet(thread_id, 1);
+    }
+}
+
+void HAL_SPI_TxCpltCallback( SPI_HandleTypeDef *hspi ){
+    if(send_state == SEND_TX_DATA){
+        osThreadFlagsSet(thread_id, 1);
+    }
+}
+
 /**
  * @brief      interface spi bus read
  * @param[in]  reg is the register address
@@ -136,13 +164,17 @@ uint8_t mpu9250_interface_spi_deinit(void)
  */
 uint8_t mpu9250_interface_spi_read(uint8_t reg, uint8_t *buf, uint16_t len)
 {
-    HAL_GPIO_WritePin(MP6500_CS_GPIO_Port, MP6500_CS_Pin, GPIO_PIN_RESET);
     uint8_t addr = reg | 0x80;
-    //HAL_SPI_TransmitReceive(&MPU9250_SPI_INTERFACE, tx_package, rx_package, 2, 1000);
-    HAL_SPI_Transmit(&MPU9250_SPI_INTERFACE, &addr, 1, 1000);
-    HAL_SPI_Receive(&MPU9250_SPI_INTERFACE, buf, len, 1000);
-    HAL_GPIO_WritePin(MP6500_CS_GPIO_Port, MP6500_CS_Pin, GPIO_PIN_SET);
-    return 0;
+    MP6500_CS_GPIO_Port->BSRR = (uint32_t)MP6500_CS_Pin << 16U;
+    thread_id = osThreadGetId();
+    send_state = SEND_RX_ADDR;
+    HAL_SPI_Transmit_DMA(&MPU9250_SPI_INTERFACE, &addr, 1);
+    send_state = SEND_RX_DATA;
+    HAL_SPI_Receive_DMA(&MPU9250_SPI_INTERFACE, buf, len);
+    osThreadFlagsClear(1);
+    uint32_t res = osThreadFlagsWait(1, 0, 10);
+    MP6500_CS_GPIO_Port->BSRR = MP6500_CS_Pin;
+    return res;
 }
 
 /**
@@ -159,10 +191,15 @@ uint8_t mpu9250_interface_spi_write(uint8_t reg, uint8_t *buf, uint16_t len)
 {
     HAL_GPIO_WritePin(MP6500_CS_GPIO_Port, MP6500_CS_Pin, GPIO_PIN_RESET);
     uint8_t addr = reg & 0x7F;
-    //HAL_SPI_TransmitReceive(&MPU9250_SPI_INTERFACE, tx_package, rx_package, 2, 1000);
-    HAL_SPI_Transmit(&MPU9250_SPI_INTERFACE, &addr, 1, 1000);
-    HAL_SPI_Transmit(&MPU9250_SPI_INTERFACE, buf, len, 1000);
-    HAL_GPIO_WritePin(MP6500_CS_GPIO_Port, MP6500_CS_Pin, GPIO_PIN_SET);
+    MP6500_CS_GPIO_Port->BSRR = (uint32_t)MP6500_CS_Pin << 16U;
+    thread_id = osThreadGetId();
+    send_state = SEND_TX_ADDR;
+    HAL_SPI_Transmit_DMA(&MPU9250_SPI_INTERFACE, &addr, 1);
+    send_state = SEND_TX_DATA;
+    HAL_SPI_Transmit_DMA(&MPU9250_SPI_INTERFACE, buf, len);
+    osThreadFlagsClear(1);
+    uint32_t res = osThreadFlagsWait(1, 0, 10);
+    MP6500_CS_GPIO_Port->BSRR = MP6500_CS_Pin;
     return 0;
 }
 
