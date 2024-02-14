@@ -1,4 +1,5 @@
 #include "motord.h"
+#include <math.h>
 
 /**
  * \brief           Set motor PWM duty
@@ -14,7 +15,7 @@ void motord_set_speed( motord_t* motord, float speed ){
     }
     
     uint16_t max_value = __HAL_TIM_GET_AUTORELOAD(motord->timer);
-    uint16_t compare_value = speed * (float)max_value;
+    uint16_t compare_value = fabsf(speed) * (float)max_value;
     uint32_t pwm_ch;
     uint32_t break_ch;
     if(speed > 0.0){

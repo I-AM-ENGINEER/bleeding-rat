@@ -7,3 +7,4 @@ STM32Cube/MDK-ARM/cube_generated.uvguix*
 STM32Cube/MDK-ARM/RTE/
 STM32Cube/MDK-ARM/cube_generated/
 build/
+debug.jdebug.user
