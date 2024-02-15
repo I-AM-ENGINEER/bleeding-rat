@@ -55,6 +55,9 @@
         "name": "Core",
         "files": [
           {
+            "path": "Source/collision.c"
+          },
+          {
             "path": "Source/core.c"
           },
           {

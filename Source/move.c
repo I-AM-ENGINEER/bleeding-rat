@@ -59,8 +59,8 @@ int move_cmd_move( int32_t argc, char** argv ){
 
 int32_t move_init( enum motor_decay_mode_e decay_mode ){
     lwshell_register_cmd("move", move_cmd_move, "manual motors control");
-    motord_init(&movement.motor_l, &MOTOR_L_TIM, MOTOR_L_PIN1_TIM_CHANNEL, MOTOR_L_PIN2_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
-	motord_init(&movement.motor_r, &MOTOR_R_TIM, MOTOR_R_PIN1_TIM_CHANNEL, MOTOR_R_PIN2_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
+    motord_init(&movement.motor_l, &MOTOR_L_TIM, MOTOR_L_PIN2_TIM_CHANNEL, MOTOR_L_PIN1_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
+	motord_init(&movement.motor_r, &MOTOR_R_TIM, MOTOR_R_PIN2_TIM_CHANNEL, MOTOR_R_PIN1_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
     motord_set_decay(&movement.motor_l, decay_mode);
     motord_set_decay(&movement.motor_r, decay_mode);
     return 0;
@@ -80,9 +80,9 @@ void move_permit( bool permission ){
 
 void move_set_speed( float speed_l, float speed_r ){
     #ifdef MOVE_DEBUG
-    shell_log("[move] motors speed set: l: %.3f, r: %.3f", \
-        speed_l,
-        speed_r
+    //shell_log("[move] motors speed set: l: %.3f, r: %.3f", \
+        speed_l,\
+        speed_r\
     );
     #endif
     motord_set_speed(&movement.motor_l, speed_l);

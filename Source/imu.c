@@ -43,12 +43,12 @@ int imu_init( void ){
     
     mpu9250_interface_delay_ms(50);
     uint32_t time = HAL_GetTick();
-    while((HAL_GetTick() - time) < 1000){
+    while((HAL_GetTick() - time) < 300){
         res = mpu9250_init(&imu_handle);
         if (res == 0){
             break;
         }
-        mpu9250_interface_delay_ms(10);
+        mpu9250_interface_delay_ms(50);
     }
 
     if(res != 0){

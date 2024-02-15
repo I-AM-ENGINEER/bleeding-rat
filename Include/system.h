@@ -1,7 +1,9 @@
 #ifndef SYSTEM_H__
 #define SYSTEM_H__
 
-#define SYSTEM_TIMER_US     htim7
+#define SYSTEM_TIM_US               htim7
+#define COLLISION_TIM_ADC_TRIGGER   htim8
+#define COLLISION_ADC               hadc1
 
 #include <stdint.h>
 
