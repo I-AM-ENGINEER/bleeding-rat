@@ -39,7 +39,16 @@ void motord_set_speed( motord_t* motord, float speed ){
     }
 }
 
-int32_t motord_init( motord_t* motord, TIM_HandleTypeDef* timer, uint32_t pin1_tim_channel, uint32_t pin2_tim_channel, GPIO_TypeDef* enable_port, uint32_t enable_pin ){
+int32_t motord_init( motord_t* motord, TIM_HandleTypeDef* timer, uint32_t pin1_tim_channel, uint32_t pin2_tim_channel, GPIO_TypeDef* enable_port, uint16_t enable_pin ){
+    if(motord == NULL){
+        return -1;
+    }
+    if(timer == NULL){
+        return -1;
+    }
+    if(enable_port == NULL){
+        return -1;
+    }
     motord->pin1_tim_channel = pin1_tim_channel;
     motord->pin2_tim_channel = pin2_tim_channel;
     motord->timer = timer;
@@ -49,6 +58,7 @@ int32_t motord_init( motord_t* motord, TIM_HandleTypeDef* timer, uint32_t pin1_t
     HAL_TIM_PWM_Start(timer, pin1_tim_channel);
     HAL_TIM_PWM_Start(timer, pin2_tim_channel);
     motord_enable(motord, false);
+    return 0;
 }
 
 void motord_enable( motord_t* motord, bool enable ){

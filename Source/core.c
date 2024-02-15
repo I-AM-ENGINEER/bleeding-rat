@@ -35,9 +35,8 @@ void collision_event( int16_t sensor_num, collision_sensor_state_t event_type ){
 }
 
 void core_init( void ){
-	move_init(MOTOR_DECAY_FAST);
 	move_permit(true);
-	move_set_speed(0.0, 0.0);
+	//move_set_speed(1.0, 1.0);
 	shell_log("[move] init ok");
 	collision_attach(collision_event);
 	for(uint16_t i = 0; i < 5; i++){
@@ -46,6 +45,10 @@ void core_init( void ){
 }
 
 void core_loop( void ){
+	int32_t pos = move_encoders_get(ENCODER_BACK_LEFT);
+	shell_log("%d", pos);
+	delay(50);
+	/*
 	while(collision_sensor_get_state(4) == COLLISION_EVENT_DISENGAGE){
 		move_set_speed(0.4, 0.4);
 	}
@@ -53,7 +56,7 @@ void core_loop( void ){
 	delay(500);
 	move_set_speed(0.4, -0.4);
 	delay(500);
-
+*/
 
 	/*
 	for(uint32_t i = 0; i < 5; i++){

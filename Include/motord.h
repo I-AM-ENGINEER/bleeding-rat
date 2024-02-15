@@ -24,7 +24,7 @@ typedef struct{
     enum motor_decay_mode_e decay_mode;
 } motord_t;
 
-int32_t motord_init( motord_t* motord, TIM_HandleTypeDef* timer, uint32_t pin1_tim_channel, uint32_t pin2_tim_channel, GPIO_TypeDef* enable_port, uint32_t enable_pin );
+int32_t motord_init( motord_t* motord, TIM_HandleTypeDef* timer, uint32_t pin1_tim_channel, uint32_t pin2_tim_channel, GPIO_TypeDef* enable_port, uint16_t enable_pin );
 void motord_set_speed( motord_t* motord, float speed );
 void motord_enable( motord_t* motord, bool enable );
 void motord_set_decay( motord_t* motord, enum motor_decay_mode_e decay_mode );

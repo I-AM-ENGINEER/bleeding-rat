@@ -63,8 +63,10 @@ void Error_Handler(void);
 #define MP6500_CS_GPIO_Port GPIOC
 #define HALL1_EXTI_Pin GPIO_PIN_0
 #define HALL1_EXTI_GPIO_Port GPIOA
+#define HALL1_EXTI_EXTI_IRQn EXTI0_IRQn
 #define HALL2_EXTI_Pin GPIO_PIN_1
 #define HALL2_EXTI_GPIO_Port GPIOA
+#define HALL2_EXTI_EXTI_IRQn EXTI1_IRQn
 #define IR1_ADC_Pin GPIO_PIN_2
 #define IR1_ADC_GPIO_Port GPIOA
 #define IR4_ADC_Pin GPIO_PIN_5
@@ -75,6 +77,7 @@ void Error_Handler(void);
 #define TP4056_CHRG_GPIO_Port GPIOA
 #define HALL4_EXTI_Pin GPIO_PIN_4
 #define HALL4_EXTI_GPIO_Port GPIOC
+#define HALL4_EXTI_EXTI_IRQn EXTI4_IRQn
 #define MOT_PWR_EN_Pin GPIO_PIN_5
 #define MOT_PWR_EN_GPIO_Port GPIOC
 #define IR3_ADC_Pin GPIO_PIN_0
@@ -95,6 +98,7 @@ void Error_Handler(void);
 #define TP4056_STDBY_GPIO_Port GPIOA
 #define HALL3_EXTI_Pin GPIO_PIN_15
 #define HALL3_EXTI_GPIO_Port GPIOA
+#define HALL3_EXTI_EXTI_IRQn EXTI15_10_IRQn
 
 /* USER CODE BEGIN Private defines */
 

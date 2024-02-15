@@ -64,6 +64,9 @@
             "path": "Source/driver_mpu9250_interface.c"
           },
           {
+            "path": "Source/encoderd.c"
+          },
+          {
             "path": "Source/imu.c"
           },
           {

@@ -35,6 +35,7 @@ const osThreadAttr_t collisionTask_attributes = {
 void shellTask( void *args );
 void collisionTask( void *args );
 
+static bool encoder_initialised = false;
 
 extern TIM_HandleTypeDef SYSTEM_TIM_US;
 extern TIM_HandleTypeDef COLLISION_TIM_ADC_TRIGGER;
@@ -78,7 +79,7 @@ void sys_init( void ){
     }else{
         shell_log("[timus] init fault");
     }
-    
+
     res = imu_init();
     if(res == 0){
         shell_log("[imu] init ok");
@@ -86,10 +87,17 @@ void sys_init( void ){
         shell_log("[imu] init fault");
     }
 
+	res = move_init();
+    if(res == 0){
+        shell_log("[move] init ok");
+    }else{
+        shell_log("[move] init fault");
+    }
+
     collisionTaskHandle = osThreadNew(collisionTask, NULL, &collisionTask_attributes);
 
     core_init();
-    shell_log("[core] init ok, start loop...");
+    shell_log("[core] init complite, start loop...");
     while(1){
         core_loop();
     }
@@ -117,7 +125,7 @@ void collisionTask( void *args ){
 
 // hal sensors
 void HAL_GPIO_EXTI_Callback( uint16_t GPIO_Pin ){
-
+    move_encoders_process();
 }
 
 // collision detection
