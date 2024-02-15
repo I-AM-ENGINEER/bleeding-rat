@@ -1,4 +1,5 @@
 #include "stm32f4xx.h"
+#include "main.h"
 #include "cmsis_os.h"
 #include "system.h"
 #include "shell.h"
@@ -135,4 +136,8 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef *hadc ){
         // MUST BE REPLACED with xTaskResumeFromISR() or similar!
         osThreadFlagsSet(collisionTaskHandle, 1);
     }
+}
+
+void __HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef *htim ){
+    move_encoders_overflow_timer_callback(htim);
 }

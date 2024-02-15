@@ -36,7 +36,7 @@ void collision_event( int16_t sensor_num, collision_sensor_state_t event_type ){
 
 void core_init( void ){
 	move_permit(true);
-	//move_set_speed(1.0, 1.0);
+	move_set_power(0.0, 0.0);
 	shell_log("[move] init ok");
 	collision_attach(collision_event);
 	for(uint16_t i = 0; i < 5; i++){
@@ -45,9 +45,19 @@ void core_init( void ){
 }
 
 void core_loop( void ){
-	int32_t pos = move_encoders_get(ENCODER_BACK_LEFT);
-	shell_log("%d", pos);
-	delay(50);
+	static float i = 0.0;
+	//int32_t pos_l = move_encoders_get(ENCODER_BACK_LEFT);
+	int32_t pos_r = move_encoder_get_steps(ENCODER_BACK_RIGHT);
+	float speed = move_encoders_get_rpm(ENCODER_BACK_RIGHT);
+	move_set_power(i, i);
+	if(i > 1){
+		i = 0;
+	}
+
+	i+= 0.001;
+	//printf("%d\t%f", pos_r, speed);
+	printf("%f\r\n", speed);
+	delay(10);
 	/*
 	while(collision_sensor_get_state(4) == COLLISION_EVENT_DISENGAGE){
 		move_set_speed(0.4, 0.4);

@@ -75,9 +75,6 @@ void Error_Handler(void);
 #define IR5_ADC_GPIO_Port GPIOA
 #define TP4056_CHRG_Pin GPIO_PIN_7
 #define TP4056_CHRG_GPIO_Port GPIOA
-#define HALL4_EXTI_Pin GPIO_PIN_4
-#define HALL4_EXTI_GPIO_Port GPIOC
-#define HALL4_EXTI_EXTI_IRQn EXTI4_IRQn
 #define MOT_PWR_EN_Pin GPIO_PIN_5
 #define MOT_PWR_EN_GPIO_Port GPIOC
 #define IR3_ADC_Pin GPIO_PIN_0
@@ -86,6 +83,9 @@ void Error_Handler(void);
 #define IR2_ADC_GPIO_Port GPIOB
 #define WS2812B_Pin GPIO_PIN_2
 #define WS2812B_GPIO_Port GPIOB
+#define HALL4_EXTI_Pin GPIO_PIN_12
+#define HALL4_EXTI_GPIO_Port GPIOB
+#define HALL4_EXTI_EXTI_IRQn EXTI15_10_IRQn
 #define MOT2P1_Pin GPIO_PIN_6
 #define MOT2P1_GPIO_Port GPIOC
 #define MOT2P2_Pin GPIO_PIN_7

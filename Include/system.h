@@ -14,4 +14,7 @@ void delay_us( uint32_t us );
 void delay( uint32_t ms );
 void sys_init( void );
 
+// This is fix for HAL_TIM_PeriodElapsedCallback defined in main.c
+void __HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef *htim );
+
 #endif // SYSTEM_H__
