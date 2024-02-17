@@ -1,6 +1,4 @@
 #include "encoderd.h"
-#include "shell.h"
-#include "string.h"
 #include "stdio.h"
 
 const int8_t lookup_table[4][4] = {
@@ -83,7 +81,7 @@ int32_t encoderd_get_steps( encoderd_t *encoderd ){
     return encoderd->steps;
 }
 
-void encoderd_period_timer_overflow( encoderd_t *encoderd ){
+void encoderd_period_timer_overflow_irq( encoderd_t *encoderd ){
     for(uint16_t i = 0; i < (sizeof(encoderd->timer_period_filter)/sizeof(*encoderd->timer_period_filter)); i++){
         encoderd->timer_period_filter[i] = UINT16_MAX;
     }

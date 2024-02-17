@@ -76,6 +76,9 @@
             "path": "Source/move.c"
           },
           {
+            "path": "Source/servo.c"
+          },
+          {
             "path": "Source/shell.c"
           },
           {
@@ -378,6 +381,15 @@
               }
             ],
             "folders": []
+          },
+          {
+            "name": "PID",
+            "files": [
+              {
+                "path": "Libs/PID-master/PID.c"
+              }
+            ],
+            "folders": []
           }
         ]
       }
@@ -459,7 +471,8 @@
           "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
           "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
           "Libs/mpu9250-master/src",
-          "Libs/mpu9250-master/interface"
+          "Libs/mpu9250-master/interface",
+          "Libs/PID-master"
         ],
         "libList": [],
         "sourceDirList": [],

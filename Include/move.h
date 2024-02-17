@@ -5,10 +5,21 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <stm32f4xx.h>
-#include "motord.h"
+#include "stm32f4xx.h"
 #include "encoderd.h"
+#include "motord.h"
+#include "servo.h"
+#include "PID.h"
 #include "main.h"
+
+#define SERVO_COUNT                 2
+#define SERVO_MAX_POWER             0.9     // Нужно для синхронизации моторов, должно быть меньше 1.0
+#define SERVO_MASTER                SERVO_LEFT
+#define ENCODERS_COUNT              4
+#define MOTOR_DEFAULT_DECAY         MOTORD_DECAY_FAST
+
+#define WHEEL_DIAMETER              12.0f
+#define ENCODER_STEPS_IN_ROTATION   12
 
 #//define MOVE_DEBUG
 
@@ -22,8 +33,6 @@
 #define MOTOR_EN_GPIO               MOT_PWR_EN_GPIO_Port
 #define MOTOR_EN_PIN                MOT_PWR_EN_Pin
 
-
-#define ENCODER_STEPS_IN_ROTATION   12
 
 #define ENCODER_L_F_PINA_PORT       NULL
 #define ENCODER_L_F_PINA_PIN        0
@@ -49,30 +58,35 @@
 #define ENCODER_R_B_PINB_PIN        HALL1_EXTI_Pin
 #define ENCODER_R_B_PERIOD_TIM      htim14
 
+typedef enum{
+    SERVO_STATUS_MOVING,
+    SERVO_STATUS_PARKED,
+    SERVO_STATUS_DISABLES,
+} servo_status_t;
 
 typedef enum{
-    ENCODER_FRONT_LEFT,
+    SERVO_LEFT,
+    SERVO_RIGHT,
+} servo_position_t;
+
+typedef enum{
+    ENCODER_FRONT_LEFT = 0,
     ENCODER_FRONT_RIGHT,
     ENCODER_BACK_LEFT,
     ENCODER_BACK_RIGHT,
 } encoder_position_t;
 
-typedef struct{
-    motord_t *motor;
-    encoderd_t *encoder;
-    float position;
-    float rpm;
-} motor_t;
+struct servo_bundle_s{
+    motord_t servo_motord;
+    PIDController_t servo_pid_speed;
+    PIDController_t servo_pid_distance;
+};
 
 typedef struct{
-    motord_t motord_l;
-    motord_t motord_r;
-    encoderd_t encoder_lf;
-    encoderd_t encoder_lb;
-    encoderd_t encoder_rf;
-    encoderd_t encoder_rb;
-
-
+    servo_t servo[SERVO_COUNT];
+    struct servo_bundle_s servo_bundle[SERVO_COUNT];
+    encoderd_t encoderd[ENCODERS_COUNT];
+    PIDController_t pid_distance_sync;
 
     float encoder_period;
     bool motion_permision;
@@ -80,11 +94,22 @@ typedef struct{
 
 
 int32_t move_init( void );
-void move_permit( bool permission );
-void move_set_power( float power_l, float power_r );
+
+void move_servos_callback_attach( void (*callback) (void) );
+void move_servos_permit( bool permission );
+void move_servos_power_set( float power_l, float power_r );
+void move_servos_speed_set( float speed_l, float speed_r );
+void move_servos_position_set( float position_l, float position_r, float max_speed );
+void move_servos_position_reset( void );
+servo_status_t move_servos_status_get( void );
+servo_t *move_servo_get( servo_position_t servo_position );
+encoderd_t *move_encoderd_get( encoder_position_t encoder_position );
+// Должно быть 100...1000Гц - обработка ПИД регуляторов двигателей
+void move_servos_process( void );
+
+// Должны вызываться при смене состояния любого пина энкодеров
 void move_encoders_process( void );
-void move_encoders_overflow_timer_callback( TIM_HandleTypeDef *htim );
-float move_encoders_get_rpm( encoder_position_t encoder_position );
-int32_t move_encoder_get_steps( encoder_position_t encoder_position );
+// Должно вызываться при переполнении таймера любого энкодера
+void move_encoders_overflow_timer_irq( TIM_HandleTypeDef *htim );
 
 #endif // MOVE_H__

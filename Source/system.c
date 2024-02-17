@@ -139,5 +139,5 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef *hadc ){
 }
 
 void __HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef *htim ){
-    move_encoders_overflow_timer_callback(htim);
+    move_encoders_overflow_timer_irq(htim);
 }
