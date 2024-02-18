@@ -23,9 +23,7 @@ typedef struct{
     float max_power;
     float power;
     float target_postion;
-    float position;
     float target_rpm;
-    float rpm;
 
     servo_mode_t mode;
 } servo_t;

@@ -13,11 +13,12 @@
 #include "main.h"
 
 #define SERVO_COUNT                 2
-#define SERVO_MAX_POWER             0.9     // Нужно для синхронизации моторов, должно быть меньше 1.0
-#define SERVO_MASTER                SERVO_LEFT
+#define SERVO_MAX_POWER             1.0f                
+#define SERVO_MASTER                SERVO_LEFT          // Ведущий сервопривод, ведомый будет подстраиваться под него
 #define ENCODERS_COUNT              4
 #define MOTOR_DEFAULT_DECAY         MOTORD_DECAY_FAST
-
+#define SERVO_MINIMUM_RPM           30.0f
+#define SERVO_MINIMUM_DISTANCE      1.0f
 #define WHEEL_DIAMETER              12.0f
 #define ENCODER_STEPS_IN_ROTATION   12
 
@@ -65,6 +66,12 @@ typedef enum{
 } servo_status_t;
 
 typedef enum{
+    MOVE_SYNC_NONE,
+    MOVE_SYNC_SPEED,
+    MOVE_SYNC_POSITION,
+} move_sync_status_t;
+
+typedef enum{
     SERVO_LEFT,
     SERVO_RIGHT,
 } servo_position_t;
@@ -80,6 +87,9 @@ struct servo_bundle_s{
     motord_t servo_motord;
     PIDController_t servo_pid_speed;
     PIDController_t servo_pid_distance;
+    float target_rpm;
+    float target_rotation;
+    float start_rotation;
 };
 
 typedef struct{
@@ -87,8 +97,8 @@ typedef struct{
     struct servo_bundle_s servo_bundle[SERVO_COUNT];
     encoderd_t encoderd[ENCODERS_COUNT];
     PIDController_t pid_distance_sync;
-
-    float encoder_period;
+    move_sync_status_t sync_state;
+    float sync_ratio_target;
     bool motion_permision;
 } move_t;
 
@@ -105,7 +115,7 @@ servo_status_t move_servos_status_get( void );
 servo_t *move_servo_get( servo_position_t servo_position );
 encoderd_t *move_encoderd_get( encoder_position_t encoder_position );
 // Должно быть 100...1000Гц - обработка ПИД регуляторов двигателей
-void move_servos_process( void );
+//void move_servos_process( void );
 
 // Должны вызываться при смене состояния любого пина энкодеров
 void move_encoders_process( void );

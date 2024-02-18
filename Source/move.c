@@ -41,6 +41,14 @@ extern TIM_HandleTypeDef ENCODER_R_F_PERIOD_TIM;
 #define __ENCODER_R_F_PERIOD_TIM NULL
 #endif
 
+#if SERVO_MASTER == SERVO_LEFT
+#define SERVO_SLAVE SERVO_RIGHT
+#else
+#define SERVO_SLAVE SERVO_LEFT
+#endif
+
+#define MOVE_WHEEL_LENGTH (WHEEL_DIAMETER * 3.14159f)
+
 /* Currently anavailable
 int move_cmd_move( int32_t argc, char** argv ){
     for(uint32_t i = 0; i < argc; i++){
@@ -129,10 +137,24 @@ float move_encoder_get_rpm( encoder_position_t encoder_position ){
     return rps;
 }
 
-float move_rpm2ms( encoder_position_t encoder_position ){
-    float rpm = move_encoder_get_rpm( encoder_position );
-    float speed_ms = (rpm / 60.0f) * WHEEL_DIAMETER * 2.0f * 3.14159f;
-    return speed_ms;
+static inline float move_rotate2mm( float rotate ){
+    float mm = rotate * MOVE_WHEEL_LENGTH;
+    return mm;
+}
+
+static inline float move_mm2rotate( float mm ){
+    float rotate = mm / MOVE_WHEEL_LENGTH;
+    return rotate;
+}
+
+static inline float move_rpm2mmps( float rpm ){
+    float mmps = rpm * (MOVE_WHEEL_LENGTH / 60.0f);
+    return mmps;
+}
+
+static inline float move_mmps2rpm( float mmps ){
+    float rpm = mmps * (60.0f / MOVE_WHEEL_LENGTH);
+    return rpm;
 }
 
 void move_servos_permit( bool permission ){
@@ -154,6 +176,7 @@ void move_servos_power_set( float power_l, float power_r ){
         power_r\
     );
     #endif
+    movement.sync_state = MOVE_SYNC_NONE;
     servo_mode_set(&movement.servo[SERVO_LEFT], SERVO_MODE_NO_FEEDBACK);
     servo_mode_set(&movement.servo[SERVO_RIGHT], SERVO_MODE_NO_FEEDBACK);
     servo_power_set(&movement.servo[SERVO_LEFT], power_l);
@@ -161,14 +184,86 @@ void move_servos_power_set( float power_l, float power_r ){
 }
 
 void move_servos_speed_set( float speed_l, float speed_r ){
-    servo_rpm_set(&movement.servo[SERVO_LEFT], speed_l, SERVO_MAX_POWER);
-    servo_rpm_set(&movement.servo[SERVO_RIGHT], speed_r, SERVO_MAX_POWER);
+    float rpm_l = move_mmps2rpm(speed_l);
+    float rpm_r = move_mmps2rpm(speed_r);
+    float ratio_target;
+
+    if((fabsf(rpm_l) < (float)SERVO_MINIMUM_RPM) || (fabsf(rpm_r) < (float)SERVO_MINIMUM_RPM)){
+        ratio_target = 0.0f;
+        movement.sync_state = MOVE_SYNC_NONE;
+    }else{
+        ratio_target = rpm_r / rpm_l;
+        movement.sync_state = MOVE_SYNC_SPEED;
+    }
+    
+    movement.sync_ratio_target = ratio_target;
+    
+    movement.servo_bundle[SERVO_LEFT].start_rotation  = servo_position_get(&movement.servo[SERVO_LEFT]);
+    movement.servo_bundle[SERVO_RIGHT].start_rotation = servo_position_get(&movement.servo[SERVO_RIGHT]);
+
+    movement.servo_bundle[SERVO_LEFT].target_rpm  = rpm_l;
+    movement.servo_bundle[SERVO_RIGHT].target_rpm = rpm_r;
+
+    // Переход в режим ОС по скорости
+    servo_mode_set(&movement.servo[SERVO_LEFT],  SERVO_MODE_SPEED_FEEDBACK);
+    servo_mode_set(&movement.servo[SERVO_RIGHT], SERVO_MODE_SPEED_FEEDBACK);
+
+    // Если синхронизации нет, запуск двигателей без неё
+    if(movement.sync_state == MOVE_SYNC_NONE){
+        servo_rpm_set(&movement.servo[SERVO_LEFT],  rpm_l, SERVO_MAX_POWER);
+        servo_rpm_set(&movement.servo[SERVO_RIGHT], rpm_r, SERVO_MAX_POWER);
+    }
 }
 
 
 void move_servos_position_set( float position_l, float position_r, float max_speed ){
-    servo_position_set(&movement.servo[SERVO_LEFT], position_l, max_speed, SERVO_MAX_POWER);
-    servo_position_set(&movement.servo[SERVO_RIGHT], position_r, max_speed, SERVO_MAX_POWER);
+    float max_rpm = move_mmps2rpm(max_speed);
+
+    float rotation_l = move_mm2rotate(position_l);
+    float rotation_r = move_mm2rotate(position_r);
+
+    float rotation_current_l = servo_position_get(&movement.servo[SERVO_LEFT]);
+    float rotation_current_r = servo_position_get(&movement.servo[SERVO_RIGHT]);
+    
+    float position_current_l = move_rotate2mm(rotation_current_l);
+    float position_current_r = move_rotate2mm(rotation_current_r);
+
+    float position_difference_l = position_current_l - position_l;
+    float position_difference_r = position_current_r - position_r;
+
+    float ratio_target;
+
+    if((fabsf(max_rpm) < (float)SERVO_MINIMUM_RPM) ||\
+        (fabsf(position_difference_l) < (float)SERVO_MINIMUM_DISTANCE) ||\
+        (fabsf(position_difference_r) < (float)SERVO_MINIMUM_DISTANCE)\
+    ){
+        ratio_target = 0.0f;
+        movement.sync_state = MOVE_SYNC_NONE;
+    }else{
+        ratio_target = position_difference_r / position_difference_l;
+        movement.sync_state = MOVE_SYNC_POSITION;
+    }
+
+    movement.sync_ratio_target = ratio_target;
+    
+    movement.servo_bundle[SERVO_LEFT].start_rotation  = rotation_current_l;
+    movement.servo_bundle[SERVO_RIGHT].start_rotation = rotation_current_r;
+
+    movement.servo_bundle[SERVO_LEFT].target_rpm  = max_rpm;
+    movement.servo_bundle[SERVO_RIGHT].target_rpm = max_rpm;
+
+    movement.servo_bundle[SERVO_LEFT].target_rotation  = rotation_l;
+    movement.servo_bundle[SERVO_RIGHT].target_rotation = rotation_r;
+
+    // Переход в режим ОС по положению
+    servo_mode_set(&movement.servo[SERVO_LEFT],  SERVO_MODE_POSITION_FEEDBACK);
+    servo_mode_set(&movement.servo[SERVO_RIGHT], SERVO_MODE_POSITION_FEEDBACK);
+
+    // Если синхронизации нет, запуск двигателей без неё
+    if(movement.sync_state == MOVE_SYNC_NONE){
+        servo_position_set(&movement.servo[SERVO_LEFT],  rotation_l, max_rpm, SERVO_MAX_POWER);
+        servo_position_set(&movement.servo[SERVO_RIGHT], rotation_r, max_rpm, SERVO_MAX_POWER);
+    }
 }
 
 void move_servos_position_reset( void ){
@@ -178,6 +273,50 @@ void move_servos_position_reset( void ){
 
 servo_status_t move_servos_status_get( void ){
     return SERVO_STATUS_DISABLES;
+}
+
+void move_servos_process( void ){
+    float rotation_l = servo_position_get(&movement.servo[SERVO_LEFT]);
+    float rotation_r = servo_position_get(&movement.servo[SERVO_RIGHT]);
+
+    float rotation_start_l = movement.servo_bundle[SERVO_LEFT].start_rotation;
+    float rotation_start_r = movement.servo_bundle[SERVO_RIGHT].start_rotation;
+
+    float rotation_difference_l = rotation_start_l - rotation_l;
+    float rotation_difference_r = rotation_start_r - rotation_r;
+
+
+    if(movement.sync_state != MOVE_SYNC_NONE){
+        float ratio_target = movement.sync_ratio_target;
+        float ratio_current = rotation_difference_r / rotation_difference_l;
+        
+        
+        float virtual_difference_current = rotation_difference_l * ratio_current;
+        float virtual_difference_target  = rotation_difference_l * ratio_target;
+        float virtual_difference_error = virtual_difference_current - virtual_difference_target;
+
+        float servo_master_rpm_target = movement.servo_bundle[SERVO_MASTER].target_rpm;
+
+        float servo_slave_rpm_offset = PIDController_Update(&movement.pid_distance_sync, 0.0f, virtual_difference_error);
+        float servo_slave_rpm_target = movement.servo_bundle[SERVO_SLAVE].target_rpm;
+        float servo_slave_rpm_new = servo_slave_rpm_target + servo_slave_rpm_offset;
+
+        if(movement.sync_state == MOVE_SYNC_SPEED){
+            servo_rpm_set(&movement.servo[SERVO_SLAVE], servo_slave_rpm_new, SERVO_MAX_POWER);
+            servo_rpm_set(&movement.servo[SERVO_MASTER], servo_master_rpm_target, SERVO_MAX_POWER);
+        }
+
+        if(movement.sync_state == MOVE_SYNC_POSITION){
+            float servo_master_position_target = movement.servo_bundle[SERVO_MASTER].target_rotation;
+            float servo_slave_position_target  = movement.servo_bundle[SERVO_SLAVE].target_rotation;
+
+            servo_position_set(&movement.servo[SERVO_SLAVE], servo_slave_position_target, servo_slave_rpm_new, SERVO_MAX_POWER);
+            servo_position_set(&movement.servo[SERVO_MASTER], servo_master_position_target, servo_master_rpm_target, SERVO_MAX_POWER);
+        }
+    }
+    
+    servo_process(&movement.servo[SERVO_LEFT]);
+    servo_process(&movement.servo[SERVO_RIGHT]);
 }
 
 int32_t move_init( void ){

@@ -19,7 +19,8 @@
             "*.cpp": "cpp",
             "*.cxx": "cpp",
             "*.cc": "cpp",
-            "cmath": "c"
+            "cmath": "c",
+            "__bit_reference": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,

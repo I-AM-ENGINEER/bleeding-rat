@@ -18,8 +18,6 @@ int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint
     servo->pid_position = pid_position;
     servo->steps_per_rotate = steps_per_rotate;
     servo->target_rpm = 0.0f;
-    servo->rpm = 0.0f;
-    servo->position = 0.0f;
     servo->target_postion = 0.0f;
     servo->mode = SERVO_MODE_NO_FEEDBACK;
 
@@ -50,7 +48,7 @@ int32_t servo_mode_set( servo_t *servo, servo_mode_t mode ){
                 return -3;
             }
 
-            servo->target_postion = servo->position;
+            servo->target_postion = servo_position_get(servo);
             servo->mode = SERVO_MODE_POSITION_FEEDBACK;
             break;
         default:
@@ -104,7 +102,10 @@ float servo_rpm_get( servo_t *servo ){
         return 0.0f;
     }
 
-    return servo->rpm;
+    float steps_per_second = encoderd_get_steps_per_second(servo->encoderd);
+    float rpm = 60.0f * steps_per_second / servo->steps_per_rotate;
+
+    return rpm;
 }
 
 int32_t servo_position_reset( servo_t *servo ){
@@ -112,7 +113,6 @@ int32_t servo_position_reset( servo_t *servo ){
         return -1;
     }
 
-    servo->position = 0;
     encoderd_reset(servo->encoderd);
 
     return 0;
@@ -144,19 +144,17 @@ float servo_position_get( servo_t *servo ){
         return -1;
     }
 
-    return servo->position;
+    int32_t encoder_step = encoderd_get_steps(servo->encoderd);
+    float position = (float)encoder_step/(float)servo->steps_per_rotate;
+
+    return position;
 }
 
 int32_t servo_process( servo_t *servo ){
     int32_t res = 0;
 
-    float steps_per_second = encoderd_get_steps_per_second(servo->encoderd);
-    float rpm = 60.0f * steps_per_second / servo->steps_per_rotate;
-    int32_t encoder_step = encoderd_get_steps(servo->encoderd);
-    float position = (float)encoder_step/(float)servo->steps_per_rotate;
-
-    servo->rpm = rpm;
-    servo->position = position;
+    float rpm = servo_rpm_get(servo);
+    float position = servo_position_get(servo);
 
     // Если без обратной связи, ничего не рассчитываем
     if((servo->pid_rpm != NULL) && (servo->mode != SERVO_MODE_NO_FEEDBACK)){

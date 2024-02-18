@@ -7,7 +7,7 @@
         "output-debug-info": "enable"
     },
     "c/cpp-compiler": {
-        "optimization": "level-0",
+        "optimization": "level-1",
         "language-c": "c11",
         "language-cpp": "c++11",
         "one-elf-section-per-function": true,
