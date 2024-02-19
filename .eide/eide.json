@@ -11,7 +11,11 @@
     "folders": [
       {
         "name": "Application",
-        "files": [],
+        "files": [
+          {
+            "path": "STM32Cube/startup_stm32f405xx.s"
+          }
+        ],
         "folders": [
           {
             "name": "MDK-ARM",
@@ -404,39 +408,18 @@
   "targets": {
     "bleeding-rat": {
       "excludeList": [
-        "<virtual_root>/::CMSIS"
+        "<virtual_root>/::CMSIS",
+        "<virtual_root>/Application/MDK-ARM/startup_stm32f405xx.s"
       ],
-      "toolchain": "AC6",
+      "toolchain": "GCC",
       "compileConfig": {
         "cpuType": "Cortex-M4",
         "floatingPointHardware": "single",
-        "useCustomScatterFile": false,
-        "scatterFilePath": "<YOUR_SCATTER_FILE>.sct",
+        "scatterFilePath": "STM32Cube/STM32F405RGTx_FLASH.ld",
+        "useCustomScatterFile": true,
         "storageLayout": {
-          "RAM": [
-            {
-              "tag": "IRAM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x20000000",
-                "size": "0x30000"
-              },
-              "isChecked": true,
-              "noInit": false
-            }
-          ],
-          "ROM": [
-            {
-              "tag": "IROM",
-              "id": 1,
-              "mem": {
-                "startAddr": "0x08000000",
-                "size": "0x100000"
-              },
-              "isChecked": true,
-              "isStartup": true
-            }
-          ]
+          "RAM": [],
+          "ROM": []
         },
         "options": "null"
       },

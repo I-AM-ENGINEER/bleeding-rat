@@ -10,7 +10,8 @@
             "interface": "swd",
             "executable": "build\\bleeding-rat\\bleeding-rat.elf",
             "runToEntryPoint": "main",
-            "device": "STM32F405RG"
+            "device": "STM32F405RG",
+            "toolchainPrefix": "arm-none-eabi"
         }
     ]
 }
