@@ -1,12 +1,4 @@
 #include "core.h"
-#include "move.h"
-#include "shell.h"
-#include "system.h"
-#include "imu.h"
-#include "collision.h"
-
-extern ADC_HandleTypeDef hadc1;
-extern TIM_HandleTypeDef htim8;
 
 void print_imu( void ){
 	float a[3];
@@ -26,7 +18,7 @@ void print_imu( void ){
 	shell_log("temp:%.1f\t\tacc:%.3f\t%.3f\t%.3f\t\tgyro:%.3f\t%.3f\t%.3f\t", t, a[0], a[1], a[2], b[0], b[1], b[2]);
 }
 
-void collision_event( int16_t sensor_num, collision_sensor_state_t event_type ){
+void collision_event( uint16_t sensor_num, collision_sensor_state_t event_type ){
 	if(event_type == COLLISION_EVENT_ENGAGE){
 		shell_log("[collision] sensor %hu engage", sensor_num);
 	}else{

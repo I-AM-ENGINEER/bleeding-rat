@@ -1,5 +1,5 @@
 #include "collision.h"
-#include "cmsis_os.h"
+#include <stdlib.h>
 
 static collision_sensor_t sensors[COLLISION_SENSORS_COUNT];
 static callback_t collision_callback;

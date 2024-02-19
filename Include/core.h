@@ -2,6 +2,11 @@
 #define CORE_H__
 
 #include "main.h"
+#include "move.h"
+#include "shell.h"
+#include "system.h"
+#include "imu.h"
+#include "collision.h"
 
 void core_init( void );
 void core_loop( void );

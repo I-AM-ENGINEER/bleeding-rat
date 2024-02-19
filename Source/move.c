@@ -49,54 +49,6 @@ extern TIM_HandleTypeDef ENCODER_R_F_PERIOD_TIM;
 
 #define MOVE_WHEEL_LENGTH (WHEEL_DIAMETER * 3.14159f)
 
-/* Currently anavailable
-int move_cmd_move( int32_t argc, char** argv ){
-    for(uint32_t i = 0; i < argc; i++){
-        char *argument = argv[i];
-        char *next_arg = NULL;
-        if((i+1) < argc){
-            next_arg = argv[i+1];
-        }
-        if(!strcmp(argument, "-h")){
-            printf("\
-                command move help\r\n\
-                This command used for control motors manualy\r\n\
-                -h,\tprint this help\r\n\
-                -sl,\tset speed left motor (-1.0 ... 1.0)\r\n\
-                -sr,\tset speed right motor (-1.0 ... 1.0)\r\n\
-                -s,\tset speed on both motors (-1.0 ... 1.0)\r\n\
-                -b,\tstop motors\r\n\
-            ");
-        }else if(!strcmp(argument, "-sl")){
-            if(next_arg != NULL){
-                float new_speed;
-                sscanf(next_arg, "%f", &new_speed);
-                motord_set_speed(&movement.motord_l, new_speed);
-            }
-        }else if(!strcmp(argument, "-sr")){
-            if(next_arg != NULL){
-                float new_speed;
-                sscanf(next_arg, "%f", &new_speed);
-                motord_set_speed(&movement.motord_r, new_speed);
-            }
-        }else if(!strcmp(argument, "-s")){
-            if(next_arg != NULL){
-                float new_speed;
-                sscanf(next_arg, "%f", &new_speed);
-                motord_set_speed(&movement.motord_l, new_speed);
-                motord_set_speed(&movement.motord_r, new_speed);
-            }
-        }else if(!strcmp(argument, "-b")){
-            motord_set_speed(&movement.motord_l, 0);
-            motord_set_speed(&movement.motord_r, 0);
-        }else{
-            printf("unsupported cmd, type \"move -h\" for help\r\n");
-            return -1;
-        }
-    }
-    return 0;
-}*/
-
 encoderd_t *move_encoderd_get( encoder_position_t encoder_position ){
     encoderd_t *encoderd = NULL;
     if(encoder_position < ENCODERS_COUNT){
@@ -119,22 +71,6 @@ servo_t *move_servo_get( servo_position_t servo_position ){
     }
 
     return servo;
-}
-
-float move_encoder_get_rpm( encoder_position_t encoder_position ){
-    encoderd_t *encoderd = move_encoderd_get(encoder_position);    
-    if(encoderd == NULL){
-        return 0.0f;
-    }
-    if(encoderd->htim_period == NULL){
-        shell_log("[move] encoders without timer cant capture rpm/speed");
-        return 0.0f;
-    }
-    float sps = encoderd_get_steps_per_second( encoderd );
-    float rps = (sps / (float)ENCODER_STEPS_IN_ROTATION);
-    float rpm = rps * 60.0f;
-
-    return rps;
 }
 
 static inline float move_rotate2mm( float rotate ){
@@ -198,11 +134,11 @@ void move_servos_speed_set( float speed_l, float speed_r ){
     
     movement.sync_ratio_target = ratio_target;
     
-    movement.servo_bundle[SERVO_LEFT].start_rotation  = servo_position_get(&movement.servo[SERVO_LEFT]);
-    movement.servo_bundle[SERVO_RIGHT].start_rotation = servo_position_get(&movement.servo[SERVO_RIGHT]);
+    movement.servo_bundle[SERVO_LEFT].rotation_start  = servo_position_get(&movement.servo[SERVO_LEFT]);
+    movement.servo_bundle[SERVO_RIGHT].rotation_start = servo_position_get(&movement.servo[SERVO_RIGHT]);
 
-    movement.servo_bundle[SERVO_LEFT].target_rpm  = rpm_l;
-    movement.servo_bundle[SERVO_RIGHT].target_rpm = rpm_r;
+    movement.servo_bundle[SERVO_LEFT].rpm_target  = rpm_l;
+    movement.servo_bundle[SERVO_RIGHT].rpm_target = rpm_r;
 
     // Переход в режим ОС по скорости
     servo_mode_set(&movement.servo[SERVO_LEFT],  SERVO_MODE_SPEED_FEEDBACK);
@@ -246,14 +182,14 @@ void move_servos_position_set( float position_l, float position_r, float max_spe
 
     movement.sync_ratio_target = ratio_target;
     
-    movement.servo_bundle[SERVO_LEFT].start_rotation  = rotation_current_l;
-    movement.servo_bundle[SERVO_RIGHT].start_rotation = rotation_current_r;
+    movement.servo_bundle[SERVO_LEFT].rotation_start  = rotation_current_l;
+    movement.servo_bundle[SERVO_RIGHT].rotation_start = rotation_current_r;
 
-    movement.servo_bundle[SERVO_LEFT].target_rpm  = max_rpm;
-    movement.servo_bundle[SERVO_RIGHT].target_rpm = max_rpm;
+    movement.servo_bundle[SERVO_LEFT].rpm_target  = max_rpm;
+    movement.servo_bundle[SERVO_RIGHT].rpm_target = max_rpm;
 
-    movement.servo_bundle[SERVO_LEFT].target_rotation  = rotation_l;
-    movement.servo_bundle[SERVO_RIGHT].target_rotation = rotation_r;
+    movement.servo_bundle[SERVO_LEFT].rotation_target  = rotation_l;
+    movement.servo_bundle[SERVO_RIGHT].rotation_target = rotation_r;
 
     // Переход в режим ОС по положению
     servo_mode_set(&movement.servo[SERVO_LEFT],  SERVO_MODE_POSITION_FEEDBACK);
@@ -279,8 +215,8 @@ void move_servos_process( void ){
     float rotation_l = servo_position_get(&movement.servo[SERVO_LEFT]);
     float rotation_r = servo_position_get(&movement.servo[SERVO_RIGHT]);
 
-    float rotation_start_l = movement.servo_bundle[SERVO_LEFT].start_rotation;
-    float rotation_start_r = movement.servo_bundle[SERVO_RIGHT].start_rotation;
+    float rotation_start_l = movement.servo_bundle[SERVO_LEFT].rotation_start;
+    float rotation_start_r = movement.servo_bundle[SERVO_RIGHT].rotation_start;
 
     float rotation_difference_l = rotation_start_l - rotation_l;
     float rotation_difference_r = rotation_start_r - rotation_r;
@@ -295,10 +231,10 @@ void move_servos_process( void ){
         float virtual_difference_target  = rotation_difference_l * ratio_target;
         float virtual_difference_error = virtual_difference_current - virtual_difference_target;
 
-        float servo_master_rpm_target = movement.servo_bundle[SERVO_MASTER].target_rpm;
+        float servo_master_rpm_target = movement.servo_bundle[SERVO_MASTER].rpm_target;
 
         float servo_slave_rpm_offset = PIDController_Update(&movement.pid_distance_sync, 0.0f, virtual_difference_error);
-        float servo_slave_rpm_target = movement.servo_bundle[SERVO_SLAVE].target_rpm;
+        float servo_slave_rpm_target = movement.servo_bundle[SERVO_SLAVE].rpm_target;
         float servo_slave_rpm_new = servo_slave_rpm_target + servo_slave_rpm_offset;
 
         if(movement.sync_state == MOVE_SYNC_SPEED){
@@ -307,8 +243,8 @@ void move_servos_process( void ){
         }
 
         if(movement.sync_state == MOVE_SYNC_POSITION){
-            float servo_master_position_target = movement.servo_bundle[SERVO_MASTER].target_rotation;
-            float servo_slave_position_target  = movement.servo_bundle[SERVO_SLAVE].target_rotation;
+            float servo_master_position_target = movement.servo_bundle[SERVO_MASTER].rotation_target;
+            float servo_slave_position_target  = movement.servo_bundle[SERVO_SLAVE].rotation_target;
 
             servo_position_set(&movement.servo[SERVO_SLAVE], servo_slave_position_target, servo_slave_rpm_new, SERVO_MAX_POWER);
             servo_position_set(&movement.servo[SERVO_MASTER], servo_master_position_target, servo_master_rpm_target, SERVO_MAX_POWER);
@@ -381,7 +317,24 @@ int32_t move_init( void ){
     }
 
     PIDController_Init(&movement.servo_bundle[SERVO_LEFT].servo_pid_speed);
+    PIDController_Init(&movement.servo_bundle[SERVO_RIGHT].servo_pid_speed);
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Kp = SERVO_DEFAULT_PID_SPEED_KP;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Ki = SERVO_DEFAULT_PID_SPEED_KI;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Kd = SERVO_DEFAULT_PID_SPEED_KD;
+    movement.servo_bundle[SERVO_RIGHT].servo_pid_speed = movement.servo_bundle[SERVO_LEFT].servo_pid_speed;
+
+
     PIDController_Init(&movement.servo_bundle[SERVO_LEFT].servo_pid_distance);
+    PIDController_Init(&movement.servo_bundle[SERVO_RIGHT].servo_pid_distance);
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Kp = SERVO_DEFAULT_PID_POSITION_KP;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Ki = SERVO_DEFAULT_PID_POSITION_KI;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Kd = SERVO_DEFAULT_PID_POSITION_KD;
+    movement.servo_bundle[SERVO_RIGHT].servo_pid_distance = movement.servo_bundle[SERVO_LEFT].servo_pid_distance;
+
+    PIDController_Init(&movement.pid_distance_sync);
+    movement.pid_distance_sync.Kp = SERVO_DEFAULT_PID_SYNC_KP;
+    movement.pid_distance_sync.Ki = SERVO_DEFAULT_PID_SYNC_KI;
+    movement.pid_distance_sync.Kd = SERVO_DEFAULT_PID_SYNC_KD;
 
     tmp_res = servo_init(&movement.servo[SERVO_LEFT],\
         &movement.servo_bundle[SERVO_LEFT].servo_motord,\
@@ -394,10 +347,6 @@ int32_t move_init( void ){
         shell_log("[move] servo left init fault");
     }
 
-    
-    PIDController_Init(&movement.servo_bundle[SERVO_RIGHT].servo_pid_speed);
-    PIDController_Init(&movement.servo_bundle[SERVO_RIGHT].servo_pid_distance);
-
     tmp_res = servo_init(&movement.servo[SERVO_RIGHT],\
         &movement.servo_bundle[SERVO_RIGHT].servo_motord,\
         &movement.encoderd[ENCODER_BACK_RIGHT], ENCODER_STEPS_IN_ROTATION,\
@@ -408,8 +357,6 @@ int32_t move_init( void ){
         res = -1;
         shell_log("[move] servo right init fault");
     }
-
-    PIDController_Init(&movement.pid_distance_sync);
 
     return res;
 }

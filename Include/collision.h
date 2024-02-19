@@ -19,7 +19,7 @@ typedef struct{
     collision_sensor_state_t comp_state;
 } collision_sensor_t;
 
-typedef void (*callback_t)( int16_t sensor_num, collision_sensor_state_t event_type );
+typedef void (*callback_t)( uint16_t sensor_num, collision_sensor_state_t event_type );
 
 void collision_process( uint16_t *new_sensors_data );
 void collision_attach( callback_t callback );

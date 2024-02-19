@@ -22,6 +22,18 @@
 #define WHEEL_DIAMETER              12.0f
 #define ENCODER_STEPS_IN_ROTATION   12
 
+#define SERVO_DEFAULT_PID_SPEED_KP          1.0f
+#define SERVO_DEFAULT_PID_SPEED_KI          1.0f
+#define SERVO_DEFAULT_PID_SPEED_KD          1.0f
+
+#define SERVO_DEFAULT_PID_POSITION_KP       1.0f
+#define SERVO_DEFAULT_PID_POSITION_KI       1.0f
+#define SERVO_DEFAULT_PID_POSITION_KD       1.0f
+
+#define SERVO_DEFAULT_PID_SYNC_KP           1.0f
+#define SERVO_DEFAULT_PID_SYNC_KI           1.0f
+#define SERVO_DEFAULT_PID_SYNC_KD           1.0f
+
 #//define MOVE_DEBUG
 
 #define MOTOR_L_TIM                 htim3
@@ -87,9 +99,9 @@ struct servo_bundle_s{
     motord_t servo_motord;
     PIDController_t servo_pid_speed;
     PIDController_t servo_pid_distance;
-    float target_rpm;
-    float target_rotation;
-    float start_rotation;
+    float rpm_target;
+    float rotation_target;
+    float rotation_start;
 };
 
 typedef struct{
