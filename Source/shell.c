@@ -19,6 +19,18 @@ static uint8_t dma_rx_buff[256];
 static lwrb_t tx_buffer;
 static lwrb_t rx_buffer;
 
+#ifdef __GNUC__
+int _write(int fd, char * ptr, int len){
+  shell_send_arr((uint8_t*)ptr, len);
+  return len;
+}
+#else
+#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f){
+  shell_send_arr((uint8_t*)&ch, 1);
+  return HAL_OK;
+}
+#endif /* __GNUC__ */
+
 void shell_send_buffer( void ){
     if(SHELL_UART.gState == HAL_UART_STATE_READY){
         size_t tx_size = lwrb_read(&tx_buffer, dma_tx_buff, sizeof(dma_tx_buff));
@@ -46,11 +58,6 @@ void HAL_UART_TxCpltCallback( UART_HandleTypeDef *huart ){
     if(huart->Instance == SHELL_UART.Instance){
         shell_send_buffer();
     }
-}
-
-int fputc(int ch, FILE *f){
-    shell_send_arr((uint8_t*)&ch, 1);
-    return HAL_OK;
 }
 
 void shell_output_fn( const char* str, struct lwshell* lwobj ){
