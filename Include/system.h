@@ -4,6 +4,7 @@
 #define SYSTEM_TIM_US               htim7
 #define COLLISION_TIM_ADC_TRIGGER   htim8
 #define COLLISION_ADC               hadc1
+#define COLLISION_SENSORS_COUNT     5
 
 #include <stdint.h>
 

@@ -284,7 +284,7 @@ end:
  */
 void mpu9250_interface_delay_ms(uint32_t ms)
 {
-    osDelay(ms);
+    vTaskDelay(ms);
 }
 
 /**

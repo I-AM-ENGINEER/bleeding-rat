@@ -19,10 +19,12 @@ void print_imu( void ){
 }
 
 void collision_event( uint16_t sensor_num, collision_sensor_state_t event_type ){
-	if(event_type == COLLISION_EVENT_ENGAGE){
+	if(event_type == COLLISION_STATE_ENGAGE){
 		shell_log("[collision] sensor %hu engage", sensor_num);
-	}else{
+	}else if(event_type == COLLISION_STATE_DISENGAGE){
 		shell_log("[collision] sensor %hu disengage", sensor_num);
+	}else{
+		shell_log("[collision] sensor %hu unknown state", sensor_num);
 	}
 }
 
@@ -48,8 +50,9 @@ void core_loop( void ){
 
 	i+= 0.001;
 	//printf("%d\t%f", pos_r, speed);
-	//printf("%f\r\n", speed);
-	delay(10);
+	//printf("123\r\n");
+	delay(100);
+	
 	/*
 	while(collision_sensor_get_state(4) == COLLISION_EVENT_DISENGAGE){
 		move_set_speed(0.4, 0.4);

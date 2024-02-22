@@ -1,14 +1,17 @@
 #ifndef COLLISION_H__
 #define COLLISION_H__
 
-#define COLLISION_SENSORS_COUNT         5
+#define COLLISION_DEFAULT_ENGAGE_THRESHOLD          300
+#define COLLISION_DEFAULT_DISENGAGE_THRESHOLD       500
+
 
 #include <stdint.h>
 #include <stdbool.h>
 
 typedef enum {
-    COLLISION_EVENT_ENGAGE,
-    COLLISION_EVENT_DISENGAGE,
+    COLLISION_STATE_NONE,
+    COLLISION_STATE_ENGAGE,
+    COLLISION_STATE_DISENGAGE,
 } collision_sensor_state_t;
 
 typedef struct{
@@ -21,9 +24,10 @@ typedef struct{
 
 typedef void (*callback_t)( uint16_t sensor_num, collision_sensor_state_t event_type );
 
-void collision_process( uint16_t *new_sensors_data );
-void collision_attach( callback_t callback );
-void collision_sensor_set_comparator( uint16_t sensor_num, uint16_t engage_threshold, uint16_t disengage_threshold );
+int32_t collision_init( collision_sensor_t *sensors_array, uint16_t sensors_cnt );
+int32_t collision_process( uint16_t new_sensor_data, uint16_t sensor_num );
+int32_t collision_attach( callback_t callback );
+int32_t collision_sensor_set_comparator( uint16_t sensor_num, uint16_t engage_threshold, uint16_t disengage_threshold );
 uint16_t collision_sensor_get_value( uint16_t sensor_num );
 collision_sensor_state_t collision_sensor_get_state( uint16_t sensor_num );
 

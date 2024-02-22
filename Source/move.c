@@ -211,7 +211,7 @@ servo_status_t move_servos_status_get( void ){
     return SERVO_STATUS_DISABLES;
 }
 
-void move_servos_process( void ){
+void move_process( void ){
     float rotation_l = servo_position_get(&movement.servo[SERVO_LEFT]);
     float rotation_r = servo_position_get(&movement.servo[SERVO_RIGHT]);
 

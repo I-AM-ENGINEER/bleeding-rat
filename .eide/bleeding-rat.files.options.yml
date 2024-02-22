@@ -15,17 +15,6 @@
 #
 ##########################################################################################
 
-version: '1.0'
-
-#
-# for source files with filesystem paths
-#
-files:
-#   './test/**/*.c': --c99
-
-#
-# for source files with virtual paths
-#
-virtualPathFiles:
-#   'virtual_folder/**/*.c': --c99
-
+version: "1.0"
+files: null
+virtualPathFiles: {}

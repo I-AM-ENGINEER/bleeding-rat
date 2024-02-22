@@ -118,6 +118,7 @@ typedef struct{
 int32_t move_init( void );
 
 void move_servos_callback_attach( void (*callback) (void) );
+void move_process( void );
 void move_servos_permit( bool permission );
 void move_servos_power_set( float power_l, float power_r );
 void move_servos_speed_set( float speed_l, float speed_r );

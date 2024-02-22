@@ -317,45 +317,45 @@
         ]
       },
       {
-        "name": "FreeRTOS",
-        "files": [
-          {
-            "path": "Libs/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/croutine.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/event_groups.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/list.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/portable/MemMang/heap_4.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/queue.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/stream_buffer.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/tasks.c"
-          },
-          {
-            "path": "Libs/FreeRTOS/Source/timers.c"
-          }
-        ],
-        "folders": []
-      },
-      {
         "name": "libs",
         "files": [],
         "folders": [
+          {
+            "name": "FreeRTOS",
+            "files": [
+              {
+                "path": "Libs/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/croutine.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/event_groups.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/list.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/portable/MemMang/heap_4.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/queue.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/stream_buffer.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/tasks.c"
+              },
+              {
+                "path": "Libs/FreeRTOS/Source/timers.c"
+              }
+            ],
+            "folders": []
+          },
           {
             "name": "lwrb",
             "files": [
@@ -432,7 +432,7 @@
           "cpuName": "STM32F405RG"
         },
         "proType": 1,
-        "speed": 1000,
+        "speed": 400,
         "otherCmds": ""
       },
       "uploadConfigMap": {},
