@@ -22,13 +22,14 @@
 #define WHEEL_DIAMETER              12.0f
 #define ENCODER_STEPS_IN_ROTATION   12
 
-#define SERVO_DEFAULT_PID_SPEED_KP          1.0f
-#define SERVO_DEFAULT_PID_SPEED_KI          1.0f
-#define SERVO_DEFAULT_PID_SPEED_KD          1.0f
+#define SERVO_DEFAULT_PID_SPEED_KP          0.002f
+//#define SERVO_DEFAULT_PID_SPEED_KI          0.01f
+#define SERVO_DEFAULT_PID_SPEED_KI          0.015f
+#define SERVO_DEFAULT_PID_SPEED_KD          0.000f
 
-#define SERVO_DEFAULT_PID_POSITION_KP       1.0f
-#define SERVO_DEFAULT_PID_POSITION_KI       1.0f
-#define SERVO_DEFAULT_PID_POSITION_KD       1.0f
+#define SERVO_DEFAULT_PID_POSITION_KP       10000.0f
+#define SERVO_DEFAULT_PID_POSITION_KI       0.0f
+#define SERVO_DEFAULT_PID_POSITION_KD       -7000.0f
 
 #define SERVO_DEFAULT_PID_SYNC_KP           1.0f
 #define SERVO_DEFAULT_PID_SYNC_KI           1.0f
@@ -51,25 +52,22 @@
 #define ENCODER_L_F_PINA_PIN        0
 #define ENCODER_L_F_PINB_PORT       NULL
 #define ENCODER_L_F_PINB_PIN        0
-//#define ENCODER_L_F_PERIOD_TIM      NULL
 
-#define ENCODER_L_B_PINA_PORT       HALL3_EXTI_GPIO_Port
-#define ENCODER_L_B_PINA_PIN        HALL3_EXTI_Pin
-#define ENCODER_L_B_PINB_PORT       HALL2_EXTI_GPIO_Port
-#define ENCODER_L_B_PINB_PIN        HALL2_EXTI_Pin
-#define ENCODER_L_B_PERIOD_TIM      htim13
+#define ENCODER_R_B_PINA_PORT       HALL3_EXTI_GPIO_Port
+#define ENCODER_R_B_PINA_PIN        HALL3_EXTI_Pin
+#define ENCODER_R_B_PINB_PORT       HALL2_EXTI_GPIO_Port
+#define ENCODER_R_B_PINB_PIN        HALL2_EXTI_Pin
 
 #define ENCODER_R_F_PINA_PORT       NULL
 #define ENCODER_R_F_PINA_PIN        0
 #define ENCODER_R_F_PINB_PORT       NULL
 #define ENCODER_R_F_PINB_PIN        0
-//#define ENCODER_R_F_PERIOD_TIM      NULL
 
-#define ENCODER_R_B_PINA_PORT       HALL4_EXTI_GPIO_Port
-#define ENCODER_R_B_PINA_PIN        HALL4_EXTI_Pin
-#define ENCODER_R_B_PINB_PORT       HALL1_EXTI_GPIO_Port
-#define ENCODER_R_B_PINB_PIN        HALL1_EXTI_Pin
-#define ENCODER_R_B_PERIOD_TIM      htim14
+#define ENCODER_L_B_PINA_PORT       HALL4_EXTI_GPIO_Port
+#define ENCODER_L_B_PINA_PIN        HALL4_EXTI_Pin
+#define ENCODER_L_B_PINB_PORT       HALL1_EXTI_GPIO_Port
+#define ENCODER_L_B_PINB_PIN        HALL1_EXTI_Pin
+#define ENCODER_L_B_PERIOD_TIM      htim14
 
 typedef enum{
     SERVO_STATUS_MOVING,

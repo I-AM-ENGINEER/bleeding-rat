@@ -30,8 +30,8 @@ int32_t motord_duty_set( motord_t* motord, float duty ){
             __HAL_TIM_SET_COMPARE(motord->timer, pwm_ch, max_value-compare_value);
             break;
         case MOTORD_DECAY_SLOW:
-            __HAL_TIM_SET_COMPARE(motord->timer, break_ch, 0);
-            __HAL_TIM_SET_COMPARE(motord->timer, pwm_ch, compare_value);
+            __HAL_TIM_SET_COMPARE(motord->timer, pwm_ch, 0);
+            __HAL_TIM_SET_COMPARE(motord->timer, break_ch, compare_value);
             break;
         default: break;
     }

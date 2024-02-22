@@ -432,7 +432,7 @@
           "cpuName": "STM32F405RG"
         },
         "proType": 1,
-        "speed": 400,
+        "speed": 10000,
         "otherCmds": ""
       },
       "uploadConfigMap": {},

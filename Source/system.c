@@ -34,7 +34,7 @@ inline uint64_t time_us( void ){
 }
 
 inline uint32_t time_ms( void ){
-    return HAL_GetTick();
+    return xTaskGetTickCount() * (1000/configTICK_RATE_HZ);
 }
 
 int32_t time_us_init( void ){
@@ -55,7 +55,7 @@ void sys_init( void ){
     int res = 0;
     res = shell_init();
     if(res == 0){
-        xTaskCreate(task_shell, "Shell", 300, NULL, 100, &task_shell_handle);
+        //xTaskCreate(task_shell, "Shell", 300, NULL, 100, &task_shell_handle);
         shell_log("[shell] init ok");
     }else{
         shell_log("[shell] init fault");
@@ -75,7 +75,7 @@ void sys_init( void ){
         shell_log("[move] init fault");
     }
     // WARNING! Task started anyway, results of init ignored
-    xTaskCreate(task_move, "Move", configMINIMAL_STACK_SIZE, NULL, 3000, &task_move_handle);
+    xTaskCreate(task_move, "Move", 1000, NULL, 3000, &task_move_handle);
 
     res = collision_init(collision_sensors, COLLISION_SENSORS_COUNT);
     if(res == 0){
@@ -85,7 +85,7 @@ void sys_init( void ){
         shell_log("[collision] init fault");
     }
     
-    xTaskCreate(task_imu, "IMU", 1000, NULL, 3000, &task_imu_handle);
+    //xTaskCreate(task_imu, "IMU", 1000, NULL, 3000, &task_imu_handle);
     xTaskCreate(task_app, "User app", 1000, NULL, 1000, &task_app_handle);
     vTaskStartScheduler();
     
@@ -162,5 +162,5 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef *hadc ){
 }
 
 void __HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef *htim ){
-    move_encoders_overflow_timer_irq(htim);
+    //move_encoders_overflow_timer_irq(htim);
 }

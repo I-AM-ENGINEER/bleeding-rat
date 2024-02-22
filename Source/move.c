@@ -212,6 +212,13 @@ servo_status_t move_servos_status_get( void ){
 }
 
 void move_process( void ){
+    //encoderd_process_rpm();
+    servo_process(&movement.servo[SERVO_LEFT]);
+    servo_process(&movement.servo[SERVO_RIGHT]);
+    //servo_process(&movement.servo[SERVO_RIGHT]);
+    //encoderd_process_rpm(&movement.encoderd[ENCODER_BACK_LEFT]);
+
+    return;
     float rotation_l = servo_position_get(&movement.servo[SERVO_LEFT]);
     float rotation_r = servo_position_get(&movement.servo[SERVO_RIGHT]);
 
@@ -278,8 +285,7 @@ int32_t move_init( void ){
     
     tmp_res = encoderd_init(&movement.encoderd[ENCODER_BACK_LEFT],\
         ENCODER_L_B_PINA_PORT, ENCODER_L_B_PINA_PIN,\
-        ENCODER_L_B_PINB_PORT, ENCODER_L_B_PINB_PIN,\
-        __ENCODER_L_B_PERIOD_TIM
+        ENCODER_L_B_PINB_PORT, ENCODER_L_B_PINB_PIN
     );
     if(tmp_res != 0){
         res = -1;
@@ -288,8 +294,7 @@ int32_t move_init( void ){
 
     tmp_res = encoderd_init(&movement.encoderd[ENCODER_FRONT_LEFT],\
         ENCODER_L_F_PINA_PORT, ENCODER_L_F_PINA_PIN,\
-        ENCODER_L_F_PINB_PORT, ENCODER_L_F_PINB_PIN,\
-        __ENCODER_L_F_PERIOD_TIM
+        ENCODER_L_F_PINB_PORT, ENCODER_L_F_PINB_PIN
     );
     if(tmp_res != 0){
         res = -1;
@@ -298,8 +303,7 @@ int32_t move_init( void ){
 
     tmp_res = encoderd_init(&movement.encoderd[ENCODER_BACK_RIGHT],\
         ENCODER_R_B_PINA_PORT, ENCODER_R_B_PINA_PIN,\
-        ENCODER_R_B_PINB_PORT, ENCODER_R_B_PINB_PIN,\
-        __ENCODER_R_B_PERIOD_TIM
+        ENCODER_R_B_PINB_PORT, ENCODER_R_B_PINB_PIN
     );
     if(tmp_res != 0){
         res = -1;
@@ -308,8 +312,7 @@ int32_t move_init( void ){
 
     tmp_res = encoderd_init(&movement.encoderd[ENCODER_FRONT_RIGHT],\
         ENCODER_R_F_PINA_PORT, ENCODER_R_F_PINA_PIN,\
-        ENCODER_R_F_PINB_PORT, ENCODER_R_F_PINB_PIN,\
-        __ENCODER_R_F_PERIOD_TIM
+        ENCODER_R_F_PINB_PORT, ENCODER_R_F_PINB_PIN
     );
     if(tmp_res != 0){
         res = -1;
@@ -321,6 +324,14 @@ int32_t move_init( void ){
     movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Kp = SERVO_DEFAULT_PID_SPEED_KP;
     movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Ki = SERVO_DEFAULT_PID_SPEED_KI;
     movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Kd = SERVO_DEFAULT_PID_SPEED_KD;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.tau = 3.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMin = -1.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMax = 1.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMinInt = -0.8f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMaxInt = 0.8f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.T = 0.001f;
+
+
     movement.servo_bundle[SERVO_RIGHT].servo_pid_speed = movement.servo_bundle[SERVO_LEFT].servo_pid_speed;
 
 
@@ -329,6 +340,12 @@ int32_t move_init( void ){
     movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Kp = SERVO_DEFAULT_PID_POSITION_KP;
     movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Ki = SERVO_DEFAULT_PID_POSITION_KI;
     movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Kd = SERVO_DEFAULT_PID_POSITION_KD;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.tau = 3.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMin = -1000.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMax = 1000.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMinInt = -1000.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMaxInt = 1000.0f;
+    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.T = 0.001f;
     movement.servo_bundle[SERVO_RIGHT].servo_pid_distance = movement.servo_bundle[SERVO_LEFT].servo_pid_distance;
 
     PIDController_Init(&movement.pid_distance_sync);
@@ -363,49 +380,23 @@ int32_t move_init( void ){
 
 void move_encoders_process( void ){
     int32_t res = 0;
-    res = encoderd_process(&movement.encoderd[ENCODER_BACK_LEFT]);
+    res = encoderd_process_isr(&movement.encoderd[ENCODER_BACK_LEFT]);
     if(res == -2){
         shell_log("[move] encoder left back skip step");
     }
 
-    res = encoderd_process(&movement.encoderd[ENCODER_BACK_RIGHT]);
+    res = encoderd_process_isr(&movement.encoderd[ENCODER_BACK_RIGHT]);
     if(res == -2){
-        shell_log("[move] encoder left front skip step");
+        //shell_log("[move] encoder left front skip step");
     }
 
-    res = encoderd_process(&movement.encoderd[ENCODER_FRONT_LEFT]);
+    res = encoderd_process_isr(&movement.encoderd[ENCODER_FRONT_LEFT]);
     if(res == -2){
         shell_log("[move] encoder right back skip step");
     }
 
-    res = encoderd_process(&movement.encoderd[ENCODER_FRONT_RIGHT]);
+    res = encoderd_process_isr(&movement.encoderd[ENCODER_FRONT_RIGHT]);
     if(res == -2){
-        shell_log("[move] encoder right front skip step");
-    }
-}
-
-void move_encoders_overflow_timer_irq( TIM_HandleTypeDef *htim ){
-    if(movement.encoderd[ENCODER_BACK_LEFT].htim_period != NULL){
-        if(htim->Instance == movement.encoderd[ENCODER_BACK_LEFT].htim_period->Instance){
-            encoderd_period_timer_overflow_irq(&movement.encoderd[ENCODER_BACK_LEFT]);
-        }
-    }
-    
-    if(movement.encoderd[ENCODER_BACK_RIGHT].htim_period != NULL){
-        if(htim->Instance == movement.encoderd[ENCODER_BACK_RIGHT].htim_period->Instance){
-            encoderd_period_timer_overflow_irq(&movement.encoderd[ENCODER_BACK_RIGHT]);
-        }
-    }
-
-    if(movement.encoderd[ENCODER_FRONT_RIGHT].htim_period != NULL){
-        if(htim->Instance == movement.encoderd[ENCODER_FRONT_RIGHT].htim_period->Instance){
-            encoderd_period_timer_overflow_irq(&movement.encoderd[ENCODER_FRONT_RIGHT]);
-        }
-    }
-    
-    if(movement.encoderd[ENCODER_FRONT_LEFT].htim_period != NULL){
-        if(htim->Instance == movement.encoderd[ENCODER_FRONT_LEFT].htim_period->Instance){
-            encoderd_period_timer_overflow_irq(&movement.encoderd[ENCODER_FRONT_LEFT]);
-        }
+        //shell_log("[move] encoder right front skip step");
     }
 }

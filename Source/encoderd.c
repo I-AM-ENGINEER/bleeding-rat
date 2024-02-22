@@ -1,4 +1,5 @@
 #include "encoderd.h"
+#include "system.h"
 #include "stdio.h"
 
 const int8_t lookup_table[4][4] = {
@@ -8,10 +9,9 @@ const int8_t lookup_table[4][4] = {
     {2, 1, -1, 0},
 };
 
-int encoderd_init( encoderd_t *encoderd,\
+int32_t encoderd_init( encoderd_t *encoderd,\
     GPIO_TypeDef *pin_a_gpio_port, uint16_t pin_a_pin,\
-    GPIO_TypeDef *pin_b_gpio_port, uint16_t pin_b_pin,\
-    TIM_HandleTypeDef *htim_period)
+    GPIO_TypeDef *pin_b_gpio_port, uint16_t pin_b_pin)
 {
     if(encoderd == NULL){
         return -1;
@@ -27,14 +27,15 @@ int encoderd_init( encoderd_t *encoderd,\
     encoderd->pin_a_pin = pin_a_pin;
     encoderd->pin_b_pin = pin_b_pin;
     encoderd->steps = 0;
-    encoderd->htim_period = htim_period;
-    if(encoderd->htim_period != NULL){
-        HAL_TIM_Base_Start_IT(encoderd->htim_period);
-    }
+    encoderd->filter_steps_per_second = 0.0f;
     return 0;
 }
 
-int32_t encoderd_process( encoderd_t *encoderd ){
+float moving_exponential_mean_filter(float new_value, float prev_filtered_value) {
+    return (RPM_FILTER_K * new_value) + ((1.0f - RPM_FILTER_K) * prev_filtered_value);
+}
+
+int32_t encoderd_process_isr( encoderd_t *encoderd ){
     if(encoderd == NULL){
         return -1;
     }
@@ -44,7 +45,6 @@ int32_t encoderd_process( encoderd_t *encoderd ){
     if(encoderd->pin_b_gpio_port == NULL){
         return -1;
     }
-    int32_t res = 0;
 
     uint8_t pin_a_state = HAL_GPIO_ReadPin(encoderd->pin_a_gpio_port, encoderd->pin_a_pin) == GPIO_PIN_SET ? 1 : 0;
     uint8_t pin_b_state = HAL_GPIO_ReadPin(encoderd->pin_b_gpio_port, encoderd->pin_b_pin) == GPIO_PIN_SET ? 1 : 0;
@@ -53,53 +53,76 @@ int32_t encoderd_process( encoderd_t *encoderd ){
     int8_t delta = lookup_table[state][encoderd->old_state];
 
     if(delta == 2){
-        res = -2;
+        return -2;
     }else if(delta != 0){
         encoderd->steps += (int32_t)delta;
-        if((encoderd->htim_period != NULL)){
-            encoderd->timer_period = encoderd->htim_period->Instance->CNT;
-            encoderd->timer_period_filter[encoderd->timer_period_filter_i++] = encoderd->timer_period;
-            if(encoderd->timer_period_filter_i == (sizeof(encoderd->timer_period_filter)/sizeof(*encoderd->timer_period_filter))){
-                encoderd->timer_period_filter_i = 0;
-            }
-            encoderd->htim_period->Instance->CNT = 0;
-            if(!(encoderd->htim_period->Instance->CR1 & (TIM_CR1_CEN))){
-                __HAL_TIM_ENABLE(encoderd->htim_period);
-            }
-        }
+    }
+    
+    if(delta == 0){
+        return 0;
     }
 
+    uint64_t timestamp_current = time_us();
+    uint64_t timestamp_last = encoderd->timestamp_us_last;
+
+    uint32_t time_us_delta = (uint32_t)(timestamp_current - timestamp_last);
+
+    float steps_per_s = (float)delta * 1E6f / (float)time_us_delta;
+
+
+    float steps_per_s_last = encoderd->filter_steps_per_second;
+
+    float new_fiter_value = moving_exponential_mean_filter(steps_per_s, steps_per_s_last);
+    
+    encoderd->filter_steps_per_second = new_fiter_value;
+    encoderd->timestamp_us_last = timestamp_current;
     encoderd->old_state = state;
-    return res;
+    return 0;
 }
 
-void encoderd_reset( encoderd_t *encoderd ){
+int32_t encoderd_reset( encoderd_t *encoderd ){
+    if(encoderd == NULL){
+        return -1;
+    }
+
     encoderd->steps = 0;
+
+    return 0;
 }
 
 int32_t encoderd_get_steps( encoderd_t *encoderd ){
+    if(encoderd == NULL){
+        return 0;
+    }
+
     return encoderd->steps;
 }
 
-void encoderd_period_timer_overflow_irq( encoderd_t *encoderd ){
-    for(uint16_t i = 0; i < (sizeof(encoderd->timer_period_filter)/sizeof(*encoderd->timer_period_filter)); i++){
-        encoderd->timer_period_filter[i] = UINT16_MAX;
+#include "shell.h"
+
+
+int32_t encoderd_process_rpm( encoderd_t *encoderd ){
+    if(encoderd == NULL){
+        return -1;
     }
-    __HAL_TIM_DISABLE(encoderd->htim_period);
-    encoderd->htim_period->Instance->CNT = UINT16_MAX;
+
+    uint64_t timestamp_current = time_us();
+    uint64_t timestamp_last = encoderd->timestamp_us_last;
+
+    uint32_t time_us_delta = (uint32_t)(timestamp_current - timestamp_last);
+
+    if(time_us_delta > 100000){
+        encoderd->filter_steps_per_second = 0;
+    }
+
+    return 0;
 }
 
 float encoderd_get_steps_per_second( encoderd_t *encoderd ){
-    float sps = 0.0f;
-    uint32_t period = 0;
-    for(uint32_t i = 0; i < (sizeof(encoderd->timer_period_filter)/sizeof(*encoderd->timer_period_filter)); i++){
-        period += encoderd->timer_period_filter[i];
+    if(encoderd == NULL){
+        return 0.0f;
     }
-    period /= sizeof(encoderd->timer_period_filter)/sizeof(*encoderd->timer_period_filter);
-    if(period != UINT16_MAX){
-        uint32_t timer_clock = HAL_RCC_GetPCLK1Freq() * 2;
-        uint32_t timer_period_ticks = (uint32_t)(encoderd->htim_period->Instance->PSC+1) * period;
-        sps = (float)timer_clock / (float)timer_period_ticks;
-    }
+
+    float sps = encoderd->filter_steps_per_second;
     return sps;
 }

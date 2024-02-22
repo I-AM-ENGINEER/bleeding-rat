@@ -1,5 +1,7 @@
 #include <math.h>
 #include "servo.h"
+#include <stdio.h>
+#include "shell.h"
 
 int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint32_t steps_per_rotate, PIDController_t *pid_rpm, PIDController_t *pid_position ){
     if(servo == NULL){
@@ -11,6 +13,13 @@ int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint
     if(encoderd == NULL){
         return -3;
     }
+
+    if(pid_rpm != NULL){
+        PIDController_Init(pid_rpm);
+    }
+    if(pid_position != NULL){
+        PIDController_Init(pid_position);
+    }
     
     servo->motord = motord;
     servo->encoderd = encoderd;
@@ -20,7 +29,7 @@ int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint
     servo->target_rpm = 0.0f;
     servo->target_postion = 0.0f;
     servo->mode = SERVO_MODE_NO_FEEDBACK;
-
+    
     return 0;
 }
 
@@ -103,7 +112,7 @@ float servo_rpm_get( servo_t *servo ){
     }
 
     float steps_per_second = encoderd_get_steps_per_second(servo->encoderd);
-    float rpm = 60.0f * steps_per_second / servo->steps_per_rotate;
+    float rpm = 60.0f * steps_per_second / (float)servo->steps_per_rotate;
 
     return rpm;
 }
@@ -152,7 +161,7 @@ float servo_position_get( servo_t *servo ){
 
 int32_t servo_process( servo_t *servo ){
     int32_t res = 0;
-
+    encoderd_process_rpm(servo->encoderd);
     float rpm = servo_rpm_get(servo);
     float position = servo_position_get(servo);
 
@@ -171,6 +180,12 @@ int32_t servo_process( servo_t *servo ){
                 }
             }
         }
+        //static uint32_t ggg = 0;
+        //ggg++;
+        //if(!(ggg%10)){
+        //    printf("%.3f\r\n", targer_rpm);
+        //}
+	    
 
         // Обратная связь по скорости
         float power = PIDController_Update(servo->pid_rpm, targer_rpm, rpm);

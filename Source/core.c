@@ -1,57 +1,58 @@
 #include "core.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
-void print_imu( void ){
-	float a[3];
-	float b[3];
-	float t;
-	uint8_t res = 0;
+void task( void *args ){
 
-	res = imu_read(a, b);
-	if(res != 0){
-		shell_log("[imu] read error");
-	}
-
-	res = imu_read_temperature(&t);
-	if(res != 0){
-		shell_log("[imu] read error");
-	}
-	shell_log("temp:%.1f\t\tacc:%.3f\t%.3f\t%.3f\t\tgyro:%.3f\t%.3f\t%.3f\t", t, a[0], a[1], a[2], b[0], b[1], b[2]);
-}
-
-void collision_event( uint16_t sensor_num, collision_sensor_state_t event_type ){
-	if(event_type == COLLISION_STATE_ENGAGE){
-		shell_log("[collision] sensor %hu engage", sensor_num);
-	}else if(event_type == COLLISION_STATE_DISENGAGE){
-		shell_log("[collision] sensor %hu disengage", sensor_num);
-	}else{
-		shell_log("[collision] sensor %hu unknown state", sensor_num);
+	while (1){
+		//printf("1000\r\n");
+		servo_position_set(move_servo_get(SERVO_LEFT), 5.0f, 500.0f, 0.6f);
+		servo_position_set(move_servo_get(SERVO_RIGHT), 5.0f, 500.0f, 0.6f);
+		//servo_rpm_set(move_servo_get(SERVO_LEFT), 700.0f, 1.0f);
+		//servo_rpm_set(move_servo_get(SERVO_RIGHT), 700.0f, 1.0f);
+		delay(3000);
+		//..delay(3000);
+		servo_position_set(move_servo_get(SERVO_LEFT), 0.0f, 500.0f, 0.6f);
+		servo_position_set(move_servo_get(SERVO_RIGHT), 0.0f, 500.0f, 0.6f);
+		//servo_rpm_set(move_servo_get(SERVO_LEFT), -700.0f, 1.0f);
+		//servo_rpm_set(move_servo_get(SERVO_RIGHT), -700.0f, 1.0f);
+		//move_servos_permit(false);
+		delay(3000);
+		//move_servos_permit(true);
 	}
 }
 
 void core_init( void ){
-	//move_permit(true);
+	move_servos_permit(true);
 	//move_set_power(0.0, 0.0);
 	shell_log("[move] init ok");
-	collision_attach(collision_event);
+	//collision_attach(collision_event);
 	for(uint16_t i = 0; i < 5; i++){
 		collision_sensor_set_comparator(i, 150, 100);
 	}
+	//servo_mode_set(move_servo_get(SERVO_LEFT), SERVO_MODE_SPEED_FEEDBACK);
+	//servo_mode_set(move_servo_get(SERVO_RIGHT), SERVO_MODE_SPEED_FEEDBACK);
+	servo_mode_set(move_servo_get(SERVO_LEFT), SERVO_MODE_POSITION_FEEDBACK);
+	servo_mode_set(move_servo_get(SERVO_RIGHT), SERVO_MODE_POSITION_FEEDBACK);
+	xTaskCreate(task, "fsdafsd", 500, NULL, 4400, NULL);
 }
 
+
+
 void core_loop( void ){
-	static float i = 0.0;
+	
+	//servo_mode_set(move_servo_get(SERVO_LEFT), SERVO_MODE_NO_FEEDBACK);
+	//servo_power_set(move_servo_get(SERVO_LEFT), 0.5);
+
+	//printf("%.3f\r\n", servo_position_get(move_servo_get(SERVO_LEFT)));
+	//printf("%.3f\r\n", servo_rpm_get(move_servo_get(SERVO_LEFT)));
 	//int32_t pos_l = move_encoders_get(ENCODER_BACK_LEFT);
 	//int32_t pos_r = move_encoder_get_steps(ENCODER_BACK_RIGHT);
 	//float speed = move_encoder_get_rpm(ENCODER_BACK_RIGHT);
 	//move_set_power(i, i);
-	if(i > 1){
-		i = 0;
-	}
-
-	i+= 0.001;
 	//printf("%d\t%f", pos_r, speed);
 	//printf("123\r\n");
-	delay(100);
+	delay(5);
 	
 	/*
 	while(collision_sensor_get_state(4) == COLLISION_EVENT_DISENGAGE){
@@ -71,3 +72,5 @@ void core_loop( void ){
 	delay(1000);
 	*/
 }
+
+
