@@ -34,9 +34,6 @@
                 "name": "Generated",
                 "files": [
                   {
-                    "path": "STM32Cube/Core/Src/freertos.c"
-                  },
-                  {
                     "path": "STM32Cube/Core/Src/main.c"
                   },
                   {
@@ -69,6 +66,9 @@
           },
           {
             "path": "Source/encoderd.c"
+          },
+          {
+            "path": "Source/freertos.c"
           },
           {
             "path": "Source/imu.c"
@@ -108,13 +108,10 @@
             "name": "STM32F4xx_HAL_Driver",
             "files": [
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c"
-              },
-              {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_can.c"
@@ -129,31 +126,31 @@
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c"
-              },
-              {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c"
               },
               {
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c"
+              },
+              {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma2d.c"
@@ -168,49 +165,49 @@
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c"
-              },
-              {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpsmbus.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpsmbus_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpsmbus.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c"
+              },
+              {
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_irda.c"
@@ -222,10 +219,10 @@
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_mmc.c"
@@ -240,40 +237,40 @@
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c"
-              },
-              {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c"
+              },
+              {
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sd.c"
@@ -297,10 +294,10 @@
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c"
               },
               {
-                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c"
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c"
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c"
@@ -310,6 +307,9 @@
               },
               {
                 "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c"
+              },
+              {
+                "path": "STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c"
               }
             ],
             "folders": []
@@ -320,34 +320,34 @@
         "name": "FreeRTOS",
         "files": [
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c"
+            "path": "Libs/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/croutine.c"
+            "path": "Libs/FreeRTOS/Source/croutine.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c"
+            "path": "Libs/FreeRTOS/Source/event_groups.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/list.c"
+            "path": "Libs/FreeRTOS/Source/list.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c"
+            "path": "Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c"
+            "path": "Libs/FreeRTOS/Source/portable/MemMang/heap_4.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/queue.c"
+            "path": "Libs/FreeRTOS/Source/queue.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c"
+            "path": "Libs/FreeRTOS/Source/stream_buffer.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/tasks.c"
+            "path": "Libs/FreeRTOS/Source/tasks.c"
           },
           {
-            "path": "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/timers.c"
+            "path": "Libs/FreeRTOS/Source/timers.c"
           }
         ],
         "folders": []
@@ -450,12 +450,12 @@
           ".eide/deps",
           "Libs/lwshell/src/include",
           "Libs/lwrb/src/include",
-          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/include",
-          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2",
-          "STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F",
           "Libs/mpu9250-master/src",
           "Libs/mpu9250-master/interface",
-          "Libs/PID-master"
+          "Libs/PID-master",
+          "Libs/FreeRTOS/Source/include",
+          "Libs/FreeRTOS/Source/CMSIS_RTOS_V2",
+          "Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F"
         ],
         "libList": [],
         "sourceDirList": [],
