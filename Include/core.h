@@ -7,6 +7,7 @@
 #include "system.h"
 #include "imu.h"
 #include "collision.h"
+#include "ws2812b.h"
 
 void core_init( void );
 void core_loop( void );

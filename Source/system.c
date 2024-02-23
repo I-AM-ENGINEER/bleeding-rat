@@ -26,6 +26,7 @@ void task_imu( void *args );
 extern TIM_HandleTypeDef SYSTEM_TIM_US;
 extern TIM_HandleTypeDef COLLISION_TIM_ADC_TRIGGER;
 extern ADC_HandleTypeDef COLLISION_ADC;
+extern UART_HandleTypeDef huart1;
 
 collision_sensor_t collision_sensors[COLLISION_SENSORS_COUNT];
 
@@ -53,6 +54,9 @@ inline void delay( uint32_t ms ){
 
 void sys_init( void ){
     int res = 0;
+    
+    ws2812b_write(100,0,0);
+
     res = shell_init();
     if(res == 0){
         //xTaskCreate(task_shell, "Shell", 300, NULL, 100, &task_shell_handle);
@@ -84,7 +88,7 @@ void sys_init( void ){
     }else{
         shell_log("[collision] init fault");
     }
-    
+
     //xTaskCreate(task_imu, "IMU", 1000, NULL, 3000, &task_imu_handle);
     xTaskCreate(task_app, "User app", 1000, NULL, 1000, &task_app_handle);
     vTaskStartScheduler();
@@ -108,6 +112,9 @@ void task_imu( void *args ){
 
 void task_app( void *args ){
     UNUSED(args);
+    ws2812b_write(0,100,0);
+    vTaskDelay(200);
+    ws2812b_write(0,0,10);
     shell_log("[system] start user setup");
     core_init();
     shell_log("[system] user setup complite, start loop");
@@ -158,5 +165,15 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef *hadc ){
         BaseType_t xHigherPriorityTaskWoken  = pdFALSE;
         vTaskNotifyGiveFromISR(task_collision_handle, &xHigherPriorityTaskWoken );
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+    }
+}
+
+void HardFault_Handler(void){
+    // При сваливании в ошибку, мигаем крамным диодом
+    while (1){
+		ws2812b_write_block(255, 0, 0);
+        for(volatile uint32_t i = 0; i < 1000000; i++){}
+		ws2812b_write_block(0, 0, 0);
+        for(volatile uint32_t i = 0; i < 1000000; i++){}
     }
 }
