@@ -4,8 +4,8 @@
   "dependenceList": [],
   "srcDirs": [
     ".eide/deps",
-    "app",
-    "Source"
+    "Source",
+    "App"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -395,7 +395,7 @@
           "cpuName": "STM32F405RG"
         },
         "proType": 1,
-        "speed": 10000,
+        "speed": 1000,
         "otherCmds": ""
       },
       "uploadConfigMap": {},
@@ -413,7 +413,8 @@
           "Libs/PID-master",
           "Libs/FreeRTOS/Source/include",
           "Libs/FreeRTOS/Source/CMSIS_RTOS_V2",
-          "Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F"
+          "Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F",
+          "App"
         ],
         "libList": [],
         "sourceDirList": [],

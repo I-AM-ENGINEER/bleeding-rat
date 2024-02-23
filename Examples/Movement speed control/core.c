@@ -1,3 +1,8 @@
+/*
+    Данный пример демонстрирует управление двигателями с обратной связью по скорости
+    скорость указыватется в метрах в секунду
+*/
+
 #include "core.h"
 
 void core_init( void ){
@@ -8,35 +13,27 @@ void core_init( void ){
 }
 
 void core_loop( void ){
-    // Установить скорость 0.25 м/с на оба колеса
-    move_servos_speed_set(0.25f, 0.25f);
+    // Установить скорость 100 мм/с на оба колеса
+    move_servos_speed_set(100, 100);
     delay(2000);
     
     // Остановка
-    move_servos_speed_set(0.0f, 0.0f);
+    move_servos_speed_set(0, 0);
     delay(500);
 
-    // Установить скорость -1.0 м/с на оба колеса
-    move_servos_speed_set(-1.0f, -1.0f);
-    delay(500);
+    // Установить скорость 200 мм/с на оба колеса в обратном направлении
+    move_servos_speed_set(-200, -200);
+    delay(1000);
 
     // Остановка
-    move_servos_speed_set(0.0f, 0.0f);
+    move_servos_speed_set(0, 0);
     delay(3000);
     
-    // Вращение против часовой стрелки, со скростью колес 0.2 м/с
-    move_servos_speed_set(-0.2f, 0.2f);
+    // Вращение против часовой стрелки, со скростью колес 100 мм/с
+    move_servos_speed_set(-100, 100);
     delay(500);
 
     // Остановка
-    move_servos_speed_set(0.0f, 0.0f);
+    move_servos_speed_set(0, 0);
     delay(500);
-
-    // Вращение по часовой стрелке, со скростью колес 0.2 м/с
-    move_servos_speed_set(0.2f, -0.2f);
-    delay(500);
-
-    // Остановка
-    move_servos_speed_set(0.0f, 0.0f);
-    delay(5000);
 }

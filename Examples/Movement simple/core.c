@@ -1,3 +1,12 @@
+/*
+    Данный пример демонстрирует работу с двигателями без обратных связей, самый простой способ
+    управления двигателями, мощность двигателя задается в пределах -1.0...1.0, где
+         1.0 - полная мощность, движение вперед
+        -1.0 - полная мощность, движение назад
+         0.0 - остановка
+    В функцию управления передаются 2 скорости: мощность для левого и правого двигателя, соответственно
+*/
+
 #include "core.h"
 
 void core_init( void ){
@@ -7,40 +16,19 @@ void core_init( void ){
 }
 
 void core_loop( void ){
-    float power = 0.0f;
+    // Остановка
+    move_servos_power_set(0.0, 0.0);
+    delay(500);
 
-    // Плавное ускорение до максимальной скорости моторов
-    for(; power < 1.0f; i += 0.01f){
-        move_servos_power_set(power, power);
-        delay(5);
-    }
+    // Движение вперед
+    move_servos_power_set(0.6, 0.6);
+    delay(500);
 
-    // Плавное замедление и ускорение в обратную сторону
-    for(; power > -1.0f; i -= 0.01f){
-        move_servos_power_set(power, power);
-        delay(5);
-    }
+    // Остановка
+    move_servos_power_set(0.0, 0.0);
+    delay(500);
 
-    // Плавное замедление до полной остановки
-    for(; power < 0.0f; i += 0.01f){
-        move_servos_power_set(power, power);
-        delay(5);
-    }
-
-    delay(3000);
     // Вращение против часовой стрелки
-    move_servos_power_set(-0.5f, 0.5f);
-    delay(500);
-
-    // Остановка
-    move_servos_power_set(0.0f, 0.0f);
-    delay(500);
-
-    // Вращение по часовой стрелке
-    move_servos_power_set(0.5f, -0.5f);
-    delay(500);
-
-    // Остановка
-    move_servos_power_set(0.0f, 0.0f);
-    delay(5000);
+    move_servos_power_set(-0.6, 0.6);
+    delay(300);
 }
