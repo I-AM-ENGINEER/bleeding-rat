@@ -173,8 +173,4 @@ servo_t *move_servo_get( servo_position_t servo_position );
 /// @brief Обработка изменения состояния любого пина энкодеров
 void move_encoders_process( void );
 
-/// @brief Обработка переполнения таймера любого энкодера
-/// @param htim Указатель на структуру таймера
-void move_encoders_overflow_timer_irq( TIM_HandleTypeDef *htim );
-
 #endif // MOVE_H__
