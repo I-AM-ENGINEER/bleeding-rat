@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "shell.h"
 
-int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint32_t steps_per_rotate, PIDController_t *pid_rpm, PIDController_t *pid_position ){
+int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint32_t steps_per_rotate, float rpm_min, PIDController_t *pid_rpm, PIDController_t *pid_position ){
     if(servo == NULL){
         return -1;
     }
@@ -21,6 +21,7 @@ int32_t servo_init( servo_t *servo, motord_t *motord, encoderd_t *encoderd, uint
         PIDController_Init(pid_position);
     }
     
+    servo->min_rpm = rpm_min;
     servo->motord = motord;
     servo->encoderd = encoderd;
     servo->pid_rpm = pid_rpm;
@@ -180,15 +181,16 @@ int32_t servo_process( servo_t *servo ){
                 }
             }
         }
-        //static uint32_t ggg = 0;
-        //ggg++;
-        //if(!(ggg%10)){
-        //    printf("%.3f\r\n", targer_rpm);
-        //}
-	    
+
+        // Защита от осциляций на предельно малых скоростях
+        if(fabsf(targer_rpm) < servo->min_rpm){
+            targer_rpm = 0.0f;
+            servo->pid_rpm->integrator = 0.0f;
+        }
 
         // Обратная связь по скорости
         float power = PIDController_Update(servo->pid_rpm, targer_rpm, rpm);
+
         // Если превышение мощности, ограничиваем
         if(fabsf(power) > servo->max_power){
             if(power > 0){

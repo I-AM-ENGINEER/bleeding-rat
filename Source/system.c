@@ -160,7 +160,3 @@ void HAL_ADC_ConvCpltCallback( ADC_HandleTypeDef *hadc ){
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     }
 }
-
-void __HAL_TIM_PeriodElapsedCallback( TIM_HandleTypeDef *htim ){
-    //move_encoders_overflow_timer_irq(htim);
-}

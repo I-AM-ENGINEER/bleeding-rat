@@ -3,9 +3,12 @@
 
 #include <stdint.h>
 #include "stm32f4xx.h"
+// Only for time_us()
+#include "system.h"
 
 #define RPM_FILTER_K 0.3 // Exponential smoothing factor
 
+#define ENCODERD_US_FUNCTION()      time_us()
 
 typedef struct{
     volatile int32_t steps;
@@ -18,18 +21,21 @@ typedef struct{
     GPIO_TypeDef *pin_b_gpio_port;
     uint16_t pin_b_pin;
     
+    uint32_t max_delta_time;
     volatile float filter_steps_per_second;
     volatile uint64_t timestamp_us_last;
 } encoderd_t;
 
 /// @brief Функция инициализации инкриментального энкодера
-/// @param encoderd указатель на инициализируемый энкодер
-/// @param pin_a_gpio_port порт, к которому подключен пин A энкодера
-/// @param pin_a_pin пин, к которому подключен вывод A энкодера
-/// @param pin_b_gpio_port порт, к которому подключен пин B энкодера
-/// @param pin_b_pin пин, к которому подключен пин B энкодера
+/// @param encoderd Указатель на инициализируемый энкодер
+/// @param steps_per_second_min Минимальное кол-во шагов в секунду, фиксируемое энкодером как движениие
+/// @param pin_a_gpio_port Порт, к которому подключен пин A энкодера
+/// @param pin_a_pin Пин, к которому подключен вывод A энкодера
+/// @param pin_b_gpio_port Порт, к которому подключен пин B энкодера
+/// @param pin_b_pin Пин, к которому подключен пин B энкодера
 /// @return 0 - инициализация успешна, -1 - ошибка
 int32_t encoderd_init( encoderd_t *encoderd,\
+    float steps_per_second_min,\
     GPIO_TypeDef *pin_a_gpio_port, uint16_t pin_a_pin,\
     GPIO_TypeDef *pin_b_gpio_port, uint16_t pin_b_pin\
 );

@@ -14,10 +14,12 @@
 
 #define SERVO_COUNT                 2
 #define SERVO_MAX_POWER             1.0f                
-#define SERVO_MASTER                SERVO_LEFT          // Ведущий сервопривод, ведомый будет подстраиваться под него
+#define SERVO_MASTER                SERVO_LEFT             // Ведущий сервопривод, ведомый будет подстраиваться под него
+#define SERVO_SLAVE                 SERVO_RIGHT              // По неизвестным мне причинам, препроцессор не могет в сравнение, ну и идет он нахуй
 #define ENCODERS_COUNT              4
 #define MOTOR_DEFAULT_DECAY         MOTORD_DECAY_FAST
-#define SERVO_MINIMUM_RPM           30.0f
+#define SERVO_MINIMUM_RPM           60.0f
+#define SERVO_MAXIMUM_RPM           1000.0f
 #define SERVO_MINIMUM_DISTANCE      1.0f
 #define WHEEL_DIAMETER              12.0f
 #define ENCODER_STEPS_IN_ROTATION   12
@@ -26,48 +28,40 @@
 //#define SERVO_DEFAULT_PID_SPEED_KI          0.01f
 #define SERVO_DEFAULT_PID_SPEED_KI          0.015f
 #define SERVO_DEFAULT_PID_SPEED_KD          0.000f
+#define SERVO_DEFAULT_PID_SPEED_TAU         1.0f
 
-#define SERVO_DEFAULT_PID_POSITION_KP       10000.0f
+#define SERVO_DEFAULT_PID_POSITION_KP       1500.0f
 #define SERVO_DEFAULT_PID_POSITION_KI       0.0f
-#define SERVO_DEFAULT_PID_POSITION_KD       -7000.0f
+#define SERVO_DEFAULT_PID_POSITION_KD       0.0f
+#define SERVO_DEFAULT_PID_POSITION_TAU      1.0f
 
-#define SERVO_DEFAULT_PID_SYNC_KP           1.0f
-#define SERVO_DEFAULT_PID_SYNC_KI           1.0f
-#define SERVO_DEFAULT_PID_SYNC_KD           1.0f
+#define SERVO_DEFAULT_PID_SYNC_KP           100.0f
+#define SERVO_DEFAULT_PID_SYNC_KI           0.0f
+#define SERVO_DEFAULT_PID_SYNC_KD           0.0f
+#define SERVO_DEFAULT_PID_SYNC_TAU          1.0f
 
-#//define MOVE_DEBUG
 
-#define MOTOR_L_TIM                 htim3
+//define MOVE_DEBUG
+
 #define MOTOR_R_TIM                 htim3
-#define MOTOR_L_PIN1_TIM_CHANNEL    TIM_CHANNEL_2
-#define MOTOR_L_PIN2_TIM_CHANNEL    TIM_CHANNEL_1
-#define MOTOR_R_PIN1_TIM_CHANNEL    TIM_CHANNEL_3
-#define MOTOR_R_PIN2_TIM_CHANNEL    TIM_CHANNEL_4
+#define MOTOR_L_TIM                 htim3
+#define MOTOR_R_PIN1_TIM_CHANNEL    TIM_CHANNEL_2
+#define MOTOR_R_PIN2_TIM_CHANNEL    TIM_CHANNEL_1
+#define MOTOR_L_PIN1_TIM_CHANNEL    TIM_CHANNEL_3
+#define MOTOR_L_PIN2_TIM_CHANNEL    TIM_CHANNEL_4
 
 #define MOTOR_EN_GPIO               MOT_PWR_EN_GPIO_Port
 #define MOTOR_EN_PIN                MOT_PWR_EN_Pin
 
+#define ENCODER_L_PINA_PORT       HALL3_EXTI_GPIO_Port
+#define ENCODER_L_PINA_PIN        HALL3_EXTI_Pin
+#define ENCODER_L_PINB_PORT       HALL2_EXTI_GPIO_Port
+#define ENCODER_L_PINB_PIN        HALL2_EXTI_Pin
 
-#define ENCODER_L_F_PINA_PORT       NULL
-#define ENCODER_L_F_PINA_PIN        0
-#define ENCODER_L_F_PINB_PORT       NULL
-#define ENCODER_L_F_PINB_PIN        0
-
-#define ENCODER_R_B_PINA_PORT       HALL3_EXTI_GPIO_Port
-#define ENCODER_R_B_PINA_PIN        HALL3_EXTI_Pin
-#define ENCODER_R_B_PINB_PORT       HALL2_EXTI_GPIO_Port
-#define ENCODER_R_B_PINB_PIN        HALL2_EXTI_Pin
-
-#define ENCODER_R_F_PINA_PORT       NULL
-#define ENCODER_R_F_PINA_PIN        0
-#define ENCODER_R_F_PINB_PORT       NULL
-#define ENCODER_R_F_PINB_PIN        0
-
-#define ENCODER_L_B_PINA_PORT       HALL4_EXTI_GPIO_Port
-#define ENCODER_L_B_PINA_PIN        HALL4_EXTI_Pin
-#define ENCODER_L_B_PINB_PORT       HALL1_EXTI_GPIO_Port
-#define ENCODER_L_B_PINB_PIN        HALL1_EXTI_Pin
-#define ENCODER_L_B_PERIOD_TIM      htim14
+#define ENCODER_R_PINA_PORT       HALL4_EXTI_GPIO_Port
+#define ENCODER_R_PINA_PIN        HALL4_EXTI_Pin
+#define ENCODER_R_PINB_PORT       HALL1_EXTI_GPIO_Port
+#define ENCODER_R_PINB_PIN        HALL1_EXTI_Pin
 
 typedef enum{
     SERVO_STATUS_MOVING,
@@ -82,21 +76,15 @@ typedef enum{
 } move_sync_status_t;
 
 typedef enum{
-    SERVO_LEFT,
+    SERVO_LEFT = 0,
     SERVO_RIGHT,
 } servo_position_t;
 
-typedef enum{
-    ENCODER_FRONT_LEFT = 0,
-    ENCODER_FRONT_RIGHT,
-    ENCODER_BACK_LEFT,
-    ENCODER_BACK_RIGHT,
-} encoder_position_t;
-
 struct servo_bundle_s{
-    motord_t servo_motord;
-    PIDController_t servo_pid_speed;
-    PIDController_t servo_pid_distance;
+    motord_t motord;
+    encoderd_t encoderd;
+    PIDController_t pid_speed;
+    PIDController_t pid_distance;
     float rpm_target;
     float rotation_target;
     float rotation_start;
@@ -105,17 +93,14 @@ struct servo_bundle_s{
 typedef struct{
     servo_t servo[SERVO_COUNT];
     struct servo_bundle_s servo_bundle[SERVO_COUNT];
-    encoderd_t encoderd[ENCODERS_COUNT];
     PIDController_t pid_distance_sync;
     move_sync_status_t sync_state;
     float sync_ratio_target;
     bool motion_permision;
 } move_t;
 
-
 int32_t move_init( void );
 
-void move_servos_callback_attach( void (*callback) (void) );
 void move_process( void );
 void move_servos_permit( bool permission );
 void move_servos_power_set( float power_l, float power_r );
@@ -124,7 +109,6 @@ void move_servos_position_set( float position_l, float position_r, float max_spe
 void move_servos_position_reset( void );
 servo_status_t move_servos_status_get( void );
 servo_t *move_servo_get( servo_position_t servo_position );
-encoderd_t *move_encoderd_get( encoder_position_t encoder_position );
 // Должно быть 100...1000Гц - обработка ПИД регуляторов двигателей
 //void move_servos_process( void );
 

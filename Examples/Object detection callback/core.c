@@ -8,7 +8,7 @@ const uint16_t disengage_threshold = 100;
 
 // Функция, которая будет вызываться при изменении состояния любого сенсора
 void collision_event( uint16_t sensor_num, collision_sensor_state_t event_type ){
-	if(event_type == COLLISION_EVENT_ENGAGE){
+	if(event_type == COLLISION_STATE_ENGAGE){
 		shell_log("sensor %hu engage", sensor_num);
 	}else{
 		shell_log("sensor %hu disengage", sensor_num);

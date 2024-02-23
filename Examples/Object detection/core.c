@@ -16,11 +16,11 @@ void core_init( void ){
 
 void core_loop( void ){
     // Ждем, пока перед сенсором не появится препядствие
-	while(collision_sensor_get_state(colision_sensor_num) == COLLISION_EVENT_DISENGAGE){ };
+	while(collision_sensor_get_state(colision_sensor_num) == COLLISION_STATE_DISENGAGE){ };
     // Вывод сообщения об обнаружении барьера
     shell_log("barrier engage");
     // Ждем, пока перед сенсором исчезнет препядствие
-	while(collision_sensor_get_state(colision_sensor_num) == COLLISION_EVENT_ENGAGE){ };    
+	while(collision_sensor_get_state(colision_sensor_num) == COLLISION_STATE_ENGAGE){ };    
     // Вывод сообщения об исчезновении барьера
     shell_log("barrier disengage");
 }

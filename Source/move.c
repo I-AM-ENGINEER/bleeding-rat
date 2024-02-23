@@ -9,57 +9,20 @@
 #include "stm32f4xx.h"
 
 static move_t movement;
+static bool move_process_mutex;
 
 extern TIM_HandleTypeDef MOTOR_L_TIM;
 extern TIM_HandleTypeDef MOTOR_L_TIM;
 
-#ifdef ENCODER_L_B_PERIOD_TIM
-#define __ENCODER_L_B_PERIOD_TIM &ENCODER_L_B_PERIOD_TIM
-extern TIM_HandleTypeDef ENCODER_L_B_PERIOD_TIM;
-#else
-#define __ENCODER_L_B_PERIOD_TIM NULL
-#endif
-
-#ifdef ENCODER_R_B_PERIOD_TIM
-#define __ENCODER_R_B_PERIOD_TIM &ENCODER_R_B_PERIOD_TIM
-extern TIM_HandleTypeDef ENCODER_R_B_PERIOD_TIM;
-#else
-#define __ENCODER_R_B_PERIOD_TIM NULL
-#endif
-
-#ifdef ENCODER_L_F_PERIOD_TIM
-#define __ENCODER_L_F_PERIOD_TIM &ENCODER_L_F_PERIOD_TIM
-extern TIM_HandleTypeDef ENCODER_L_F_PERIOD_TIM;
-#else
-#define __ENCODER_L_F_PERIOD_TIM NULL
-#endif
-
-#ifdef ENCODER_R_F_PERIOD_TIM
-#define __ENCODER_R_F_PERIOD_TIM &ENCODER_R_F_PERIOD_TIM
-extern TIM_HandleTypeDef ENCODER_R_F_PERIOD_TIM;
-#else
-#define __ENCODER_R_F_PERIOD_TIM NULL
-#endif
-
+// Я не ебу, какого хуя это блядина не хочет работать
 #if SERVO_MASTER == SERVO_LEFT
 #define SERVO_SLAVE SERVO_RIGHT
 #else
 #define SERVO_SLAVE SERVO_LEFT
 #endif
 
+
 #define MOVE_WHEEL_LENGTH (WHEEL_DIAMETER * 3.14159f)
-
-encoderd_t *move_encoderd_get( encoder_position_t encoder_position ){
-    encoderd_t *encoderd = NULL;
-    if(encoder_position < ENCODERS_COUNT){
-        encoderd = &movement.encoderd[encoder_position];
-    }
-    if(encoderd == NULL){
-        shell_log("[move] invalid encoder position");
-    }
-
-    return encoderd;
-}
 
 servo_t *move_servo_get( servo_position_t servo_position ){
     servo_t *servo = NULL;
@@ -101,8 +64,8 @@ void move_servos_permit( bool permission ){
         shell_log("[move] motors disabled");
     }
     #endif
-    motord_enable(&movement.servo_bundle[SERVO_LEFT].servo_motord, permission);
-    motord_enable(&movement.servo_bundle[SERVO_RIGHT].servo_motord, permission);
+    motord_enable(&movement.servo_bundle[SERVO_LEFT].motord, permission);
+    motord_enable(&movement.servo_bundle[SERVO_RIGHT].motord, permission);
 }
 
 void move_servos_power_set( float power_l, float power_r ){
@@ -120,6 +83,7 @@ void move_servos_power_set( float power_l, float power_r ){
 }
 
 void move_servos_speed_set( float speed_l, float speed_r ){
+    move_process_mutex = true;
     float rpm_l = move_mmps2rpm(speed_l);
     float rpm_r = move_mmps2rpm(speed_r);
     float ratio_target;
@@ -128,7 +92,11 @@ void move_servos_speed_set( float speed_l, float speed_r ){
         ratio_target = 0.0f;
         movement.sync_state = MOVE_SYNC_NONE;
     }else{
-        ratio_target = rpm_r / rpm_l;
+        if(SERVO_MASTER == SERVO_LEFT){
+            ratio_target = rpm_r / rpm_l;
+        }else{
+            ratio_target = rpm_l / rpm_r;
+        }
         movement.sync_state = MOVE_SYNC_SPEED;
     }
     
@@ -149,10 +117,12 @@ void move_servos_speed_set( float speed_l, float speed_r ){
         servo_rpm_set(&movement.servo[SERVO_LEFT],  rpm_l, SERVO_MAX_POWER);
         servo_rpm_set(&movement.servo[SERVO_RIGHT], rpm_r, SERVO_MAX_POWER);
     }
+    move_process_mutex = false;
 }
 
 
 void move_servos_position_set( float position_l, float position_r, float max_speed ){
+    move_process_mutex = true;
     float max_rpm = move_mmps2rpm(max_speed);
 
     float rotation_l = move_mm2rotate(position_l);
@@ -176,7 +146,11 @@ void move_servos_position_set( float position_l, float position_r, float max_spe
         ratio_target = 0.0f;
         movement.sync_state = MOVE_SYNC_NONE;
     }else{
-        ratio_target = position_difference_r / position_difference_l;
+        if(SERVO_MASTER == SERVO_LEFT){
+            ratio_target = position_difference_r / position_difference_l;
+        }else{
+            ratio_target = position_difference_l / position_difference_r;
+        }
         movement.sync_state = MOVE_SYNC_POSITION;
     }
 
@@ -200,11 +174,14 @@ void move_servos_position_set( float position_l, float position_r, float max_spe
         servo_position_set(&movement.servo[SERVO_LEFT],  rotation_l, max_rpm, SERVO_MAX_POWER);
         servo_position_set(&movement.servo[SERVO_RIGHT], rotation_r, max_rpm, SERVO_MAX_POWER);
     }
+    move_process_mutex = false;
 }
 
 void move_servos_position_reset( void ){
+    move_process_mutex = true;
     servo_position_reset(&movement.servo[SERVO_LEFT]);
     servo_position_reset(&movement.servo[SERVO_RIGHT]);
+    move_process_mutex = false;
 }
 
 servo_status_t move_servos_status_get( void ){
@@ -212,37 +189,43 @@ servo_status_t move_servos_status_get( void ){
 }
 
 void move_process( void ){
-    //encoderd_process_rpm();
-    servo_process(&movement.servo[SERVO_LEFT]);
-    servo_process(&movement.servo[SERVO_RIGHT]);
-    //servo_process(&movement.servo[SERVO_RIGHT]);
-    //encoderd_process_rpm(&movement.encoderd[ENCODER_BACK_LEFT]);
+    if(move_process_mutex){
+        return;
+    }
 
-    return;
-    float rotation_l = servo_position_get(&movement.servo[SERVO_LEFT]);
-    float rotation_r = servo_position_get(&movement.servo[SERVO_RIGHT]);
+    float rotation_m = servo_position_get(&movement.servo[SERVO_MASTER]);
+    float rotation_s = servo_position_get(&movement.servo[SERVO_SLAVE]);
+    
+    float rotation_start_m = movement.servo_bundle[SERVO_MASTER].rotation_start;
+    float rotation_start_s = movement.servo_bundle[SERVO_SLAVE].rotation_start;
 
-    float rotation_start_l = movement.servo_bundle[SERVO_LEFT].rotation_start;
-    float rotation_start_r = movement.servo_bundle[SERVO_RIGHT].rotation_start;
-
-    float rotation_difference_l = rotation_start_l - rotation_l;
-    float rotation_difference_r = rotation_start_r - rotation_r;
+    float rotation_difference_m = rotation_start_m - rotation_m;
+    float rotation_difference_s = rotation_start_s - rotation_s;
 
 
     if(movement.sync_state != MOVE_SYNC_NONE){
         float ratio_target = movement.sync_ratio_target;
-        float ratio_current = rotation_difference_r / rotation_difference_l;
-        
-        
-        float virtual_difference_current = rotation_difference_l * ratio_current;
-        float virtual_difference_target  = rotation_difference_l * ratio_target;
+        float ratio_current;
+        if(fabsf(rotation_difference_m) < 0.1){
+            ratio_current = 1.0f;
+        }else{
+            ratio_current = rotation_difference_s / rotation_difference_m;
+        }
+
+        float virtual_difference_current = rotation_difference_m * ratio_current;
+        float virtual_difference_target  = rotation_difference_m * ratio_target;
         float virtual_difference_error = virtual_difference_current - virtual_difference_target;
 
         float servo_master_rpm_target = movement.servo_bundle[SERVO_MASTER].rpm_target;
 
         float servo_slave_rpm_offset = PIDController_Update(&movement.pid_distance_sync, 0.0f, virtual_difference_error);
         float servo_slave_rpm_target = movement.servo_bundle[SERVO_SLAVE].rpm_target;
-        float servo_slave_rpm_new = servo_slave_rpm_target + servo_slave_rpm_offset;
+        
+        if(virtual_difference_target > 0.0f){
+            servo_slave_rpm_offset = -servo_slave_rpm_offset;
+        }
+        
+        float servo_slave_rpm_new = servo_slave_rpm_target - servo_slave_rpm_offset;
 
         if(movement.sync_state == MOVE_SYNC_SPEED){
             servo_rpm_set(&movement.servo[SERVO_SLAVE], servo_slave_rpm_new, SERVO_MAX_POWER);
@@ -252,112 +235,94 @@ void move_process( void ){
         if(movement.sync_state == MOVE_SYNC_POSITION){
             float servo_master_position_target = movement.servo_bundle[SERVO_MASTER].rotation_target;
             float servo_slave_position_target  = movement.servo_bundle[SERVO_SLAVE].rotation_target;
-
             servo_position_set(&movement.servo[SERVO_SLAVE], servo_slave_position_target, servo_slave_rpm_new, SERVO_MAX_POWER);
             servo_position_set(&movement.servo[SERVO_MASTER], servo_master_position_target, servo_master_rpm_target, SERVO_MAX_POWER);
         }
     }
     
-    servo_process(&movement.servo[SERVO_LEFT]);
-    servo_process(&movement.servo[SERVO_RIGHT]);
+    servo_process(&movement.servo[SERVO_MASTER]);
+    servo_process(&movement.servo[SERVO_SLAVE]);
 }
 
 int32_t move_init( void ){
-    //lwshell_register_cmd("move", move_cmd_move, "manual motors control");
     int32_t res = 0;
     int32_t tmp_res = 0;
 
-    tmp_res = motord_init(&movement.servo_bundle[SERVO_LEFT].servo_motord, &MOTOR_L_TIM, MOTOR_L_PIN2_TIM_CHANNEL, MOTOR_L_PIN1_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
+    // Инициализация двигателей
+    tmp_res = motord_init(&movement.servo_bundle[SERVO_LEFT].motord, &MOTOR_L_TIM, MOTOR_L_PIN2_TIM_CHANNEL, MOTOR_L_PIN1_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
     if(tmp_res != 0){
         res = 1;
         shell_log("[move] motor left init fault");
     }else{
-        motord_decay_set(&movement.servo_bundle[SERVO_LEFT].servo_motord, MOTOR_DEFAULT_DECAY);
+        motord_decay_set(&movement.servo_bundle[SERVO_LEFT].motord, MOTOR_DEFAULT_DECAY);
     }
 
-    tmp_res = motord_init(&movement.servo_bundle[SERVO_RIGHT].servo_motord, &MOTOR_R_TIM, MOTOR_R_PIN2_TIM_CHANNEL, MOTOR_R_PIN1_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
+    tmp_res = motord_init(&movement.servo_bundle[SERVO_RIGHT].motord, &MOTOR_R_TIM, MOTOR_R_PIN2_TIM_CHANNEL, MOTOR_R_PIN1_TIM_CHANNEL, MOTOR_EN_GPIO, MOTOR_EN_PIN);
     if(tmp_res != 0){
         res = -1;
         shell_log("[move] motor right init fault");
     }else{
-        motord_decay_set(&movement.servo_bundle[SERVO_RIGHT].servo_motord, MOTOR_DEFAULT_DECAY);
+        motord_decay_set(&movement.servo_bundle[SERVO_RIGHT].motord, MOTOR_DEFAULT_DECAY);
     }
     
-    tmp_res = encoderd_init(&movement.encoderd[ENCODER_BACK_LEFT],\
-        ENCODER_L_B_PINA_PORT, ENCODER_L_B_PINA_PIN,\
-        ENCODER_L_B_PINB_PORT, ENCODER_L_B_PINB_PIN
+    // Инициализация энкодеров
+    tmp_res = encoderd_init(&movement.servo_bundle[SERVO_LEFT].encoderd,\
+        (float)SERVO_MINIMUM_RPM/(float)ENCODER_STEPS_IN_ROTATION,\
+        ENCODER_L_PINA_PORT, ENCODER_L_PINA_PIN,\
+        ENCODER_L_PINB_PORT, ENCODER_L_PINB_PIN
     );
     if(tmp_res != 0){
         res = -1;
-        shell_log("[move] encoder left back init fault");
+        shell_log("[move] encoder left init fault");
     }
 
-    tmp_res = encoderd_init(&movement.encoderd[ENCODER_FRONT_LEFT],\
-        ENCODER_L_F_PINA_PORT, ENCODER_L_F_PINA_PIN,\
-        ENCODER_L_F_PINB_PORT, ENCODER_L_F_PINB_PIN
+    tmp_res = encoderd_init(&movement.servo_bundle[SERVO_RIGHT].encoderd,\
+        (float)SERVO_MINIMUM_RPM/(float)ENCODER_STEPS_IN_ROTATION,\
+        ENCODER_R_PINA_PORT, ENCODER_R_PINA_PIN,\
+        ENCODER_R_PINB_PORT, ENCODER_R_PINB_PIN
     );
     if(tmp_res != 0){
         res = -1;
-        shell_log("[move] encoder left front init fault");
+        shell_log("[move] encoder right init fault");
     }
+    
+    // Инициализация ПИД серво (ООС по скорости)
+    PIDController_t pid_speed;
+    PIDController_Init(&pid_speed);
+    pid_speed.Kp        = SERVO_DEFAULT_PID_SPEED_KP;
+    pid_speed.Ki        = SERVO_DEFAULT_PID_SPEED_KI;
+    pid_speed.Kd        = SERVO_DEFAULT_PID_SPEED_KD;
+    pid_speed.tau       = SERVO_DEFAULT_PID_SPEED_TAU;
+    pid_speed.limMin    = -1.0f;
+    pid_speed.limMax    =  1.0f;
+    pid_speed.limMinInt = -1.0f;
+    pid_speed.limMaxInt =  1.0f;
+    pid_speed.T = 0.001f;
+    movement.servo_bundle[SERVO_LEFT].pid_speed  = pid_speed;
+    movement.servo_bundle[SERVO_RIGHT].pid_speed = pid_speed;
 
-    tmp_res = encoderd_init(&movement.encoderd[ENCODER_BACK_RIGHT],\
-        ENCODER_R_B_PINA_PORT, ENCODER_R_B_PINA_PIN,\
-        ENCODER_R_B_PINB_PORT, ENCODER_R_B_PINB_PIN
-    );
-    if(tmp_res != 0){
-        res = -1;
-        shell_log("[move] encoder right back init fault");
-    }
+    // Инициализация ПИД серво (ООС по положению)
+    PIDController_t pid_position;
+    PIDController_Init(&pid_position);
+    pid_position.Kp         = SERVO_DEFAULT_PID_POSITION_KP;
+    pid_position.Ki         = SERVO_DEFAULT_PID_POSITION_KI;
+    pid_position.Kd         = SERVO_DEFAULT_PID_POSITION_KD;
+    pid_position.tau        = SERVO_DEFAULT_PID_POSITION_TAU;
+    pid_position.limMin     = -SERVO_MAXIMUM_RPM;
+    pid_position.limMax     =  SERVO_MAXIMUM_RPM;
+    pid_position.limMinInt  = -SERVO_MAXIMUM_RPM;
+    pid_position.limMaxInt  =  SERVO_MAXIMUM_RPM;
+    pid_position.T = 0.001f;
+    movement.servo_bundle[SERVO_LEFT].pid_distance  = pid_position;
+    movement.servo_bundle[SERVO_RIGHT].pid_distance = pid_position;
 
-    tmp_res = encoderd_init(&movement.encoderd[ENCODER_FRONT_RIGHT],\
-        ENCODER_R_F_PINA_PORT, ENCODER_R_F_PINA_PIN,\
-        ENCODER_R_F_PINB_PORT, ENCODER_R_F_PINB_PIN
-    );
-    if(tmp_res != 0){
-        res = -1;
-        shell_log("[move] encoder right front init fault");
-    }
-
-    PIDController_Init(&movement.servo_bundle[SERVO_LEFT].servo_pid_speed);
-    PIDController_Init(&movement.servo_bundle[SERVO_RIGHT].servo_pid_speed);
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Kp = SERVO_DEFAULT_PID_SPEED_KP;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Ki = SERVO_DEFAULT_PID_SPEED_KI;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.Kd = SERVO_DEFAULT_PID_SPEED_KD;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.tau = 3.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMin = -1.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMax = 1.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMinInt = -0.8f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.limMaxInt = 0.8f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_speed.T = 0.001f;
-
-
-    movement.servo_bundle[SERVO_RIGHT].servo_pid_speed = movement.servo_bundle[SERVO_LEFT].servo_pid_speed;
-
-
-    PIDController_Init(&movement.servo_bundle[SERVO_LEFT].servo_pid_distance);
-    PIDController_Init(&movement.servo_bundle[SERVO_RIGHT].servo_pid_distance);
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Kp = SERVO_DEFAULT_PID_POSITION_KP;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Ki = SERVO_DEFAULT_PID_POSITION_KI;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.Kd = SERVO_DEFAULT_PID_POSITION_KD;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.tau = 3.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMin = -1000.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMax = 1000.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMinInt = -1000.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.limMaxInt = 1000.0f;
-    movement.servo_bundle[SERVO_LEFT].servo_pid_distance.T = 0.001f;
-    movement.servo_bundle[SERVO_RIGHT].servo_pid_distance = movement.servo_bundle[SERVO_LEFT].servo_pid_distance;
-
-    PIDController_Init(&movement.pid_distance_sync);
-    movement.pid_distance_sync.Kp = SERVO_DEFAULT_PID_SYNC_KP;
-    movement.pid_distance_sync.Ki = SERVO_DEFAULT_PID_SYNC_KI;
-    movement.pid_distance_sync.Kd = SERVO_DEFAULT_PID_SYNC_KD;
-
+    // Инициалиизация серводвигателей
     tmp_res = servo_init(&movement.servo[SERVO_LEFT],\
-        &movement.servo_bundle[SERVO_LEFT].servo_motord,\
-        &movement.encoderd[ENCODER_BACK_LEFT], ENCODER_STEPS_IN_ROTATION,\
-        &movement.servo_bundle[SERVO_LEFT].servo_pid_speed,\
-        &movement.servo_bundle[SERVO_LEFT].servo_pid_distance
+        &movement.servo_bundle[SERVO_LEFT].motord,\
+        &movement.servo_bundle[SERVO_LEFT].encoderd, 
+        ENCODER_STEPS_IN_ROTATION, SERVO_MINIMUM_RPM,\
+        &movement.servo_bundle[SERVO_LEFT].pid_speed,\
+        &movement.servo_bundle[SERVO_LEFT].pid_distance
     );
     if(tmp_res != 0){
         res = -1;
@@ -365,38 +330,43 @@ int32_t move_init( void ){
     }
 
     tmp_res = servo_init(&movement.servo[SERVO_RIGHT],\
-        &movement.servo_bundle[SERVO_RIGHT].servo_motord,\
-        &movement.encoderd[ENCODER_BACK_RIGHT], ENCODER_STEPS_IN_ROTATION,\
-        &movement.servo_bundle[SERVO_RIGHT].servo_pid_speed,\
-        &movement.servo_bundle[SERVO_RIGHT].servo_pid_distance
+        &movement.servo_bundle[SERVO_RIGHT].motord,\
+        &movement.servo_bundle[SERVO_RIGHT].encoderd,\
+        ENCODER_STEPS_IN_ROTATION, SERVO_MINIMUM_RPM,\
+        &movement.servo_bundle[SERVO_RIGHT].pid_speed,\
+        &movement.servo_bundle[SERVO_RIGHT].pid_distance
     );
     if(tmp_res != 0){
         res = -1;
         shell_log("[move] servo right init fault");
     }
 
+    // Инициализация ПИД синхронизация серводвигателей
+    PIDController_t pid_sync;
+    PIDController_Init(&pid_sync);
+    pid_sync.Kp         = SERVO_DEFAULT_PID_SYNC_KP;
+    pid_sync.Ki         = SERVO_DEFAULT_PID_SYNC_KI;
+    pid_sync.Kd         = SERVO_DEFAULT_PID_SYNC_KD;
+    pid_sync.tau        = SERVO_DEFAULT_PID_SYNC_TAU;
+    pid_sync.limMin     = -SERVO_MAXIMUM_RPM;
+    pid_sync.limMax     =  SERVO_MAXIMUM_RPM;
+    pid_sync.limMinInt  = -SERVO_MAXIMUM_RPM;
+    pid_sync.limMaxInt  =  SERVO_MAXIMUM_RPM;
+    pid_sync.T = 0.001f;
+    movement.pid_distance_sync = pid_sync;
+    
     return res;
 }
 
 void move_encoders_process( void ){
     int32_t res = 0;
-    res = encoderd_process_isr(&movement.encoderd[ENCODER_BACK_LEFT]);
+    res = encoderd_process_isr(&movement.servo_bundle[SERVO_LEFT].encoderd);
     if(res == -2){
-        shell_log("[move] encoder left back skip step");
+        shell_log("[move] encoder left skip step");
     }
 
-    res = encoderd_process_isr(&movement.encoderd[ENCODER_BACK_RIGHT]);
+    res = encoderd_process_isr(&movement.servo_bundle[SERVO_RIGHT].encoderd);
     if(res == -2){
-        //shell_log("[move] encoder left front skip step");
-    }
-
-    res = encoderd_process_isr(&movement.encoderd[ENCODER_FRONT_LEFT]);
-    if(res == -2){
-        shell_log("[move] encoder right back skip step");
-    }
-
-    res = encoderd_process_isr(&movement.encoderd[ENCODER_FRONT_RIGHT]);
-    if(res == -2){
-        //shell_log("[move] encoder right front skip step");
+        shell_log("[move] encoder right skip step");
     }
 }
