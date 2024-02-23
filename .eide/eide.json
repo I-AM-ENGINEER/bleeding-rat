@@ -3,7 +3,9 @@
   "type": "ARM",
   "dependenceList": [],
   "srcDirs": [
-    ".eide/deps"
+    ".eide/deps",
+    "app",
+    "Source"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -51,48 +53,6 @@
             ]
           }
         ]
-      },
-      {
-        "name": "Core",
-        "files": [
-          {
-            "path": "Source/collision.c"
-          },
-          {
-            "path": "Source/core.c"
-          },
-          {
-            "path": "Source/driver_mpu9250_interface.c"
-          },
-          {
-            "path": "Source/encoderd.c"
-          },
-          {
-            "path": "Source/freertos.c"
-          },
-          {
-            "path": "Source/imu.c"
-          },
-          {
-            "path": "Source/motord.c"
-          },
-          {
-            "path": "Source/move.c"
-          },
-          {
-            "path": "Source/servo.c"
-          },
-          {
-            "path": "Source/shell.c"
-          },
-          {
-            "path": "Source/system.c"
-          },
-          {
-            "path": "Source/ws2812b.c"
-          }
-        ],
-        "folders": []
       },
       {
         "name": "Drivers",
@@ -450,8 +410,6 @@
           "Include",
           "Libs/lwshell/src/include",
           "Libs/lwrb/src/include",
-          "Libs/mpu9250-master/src",
-          "Libs/mpu9250-master/interface",
           "Libs/PID-master",
           "Libs/FreeRTOS/Source/include",
           "Libs/FreeRTOS/Source/CMSIS_RTOS_V2",

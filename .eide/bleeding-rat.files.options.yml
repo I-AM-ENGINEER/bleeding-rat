@@ -16,6 +16,7 @@
 ##########################################################################################
 
 version: "1.0"
-files: null
+files:
+    Source/ws2812b.c: -Ofast
 virtualPathFiles:
     <virtual_root>/Core/ws2812b.c: -Ofast
