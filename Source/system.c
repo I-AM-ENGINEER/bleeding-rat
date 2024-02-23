@@ -30,22 +30,39 @@ extern UART_HandleTypeDef huart1;
 
 collision_sensor_t collision_sensors[COLLISION_SENSORS_COUNT];
 
+static volatile uint32_t time_us_high_num = 0;
+
+void time_us_timer_overflow( TIM_HandleTypeDef *htim ){
+    time_us_high_num++;
+}
+
 inline uint64_t time_us( void ){
-    return ((uint64_t)time_ms() * 1000) + (uint64_t)__HAL_TIM_GET_COUNTER(&SYSTEM_TIM_US);
+    uint32_t time_low = (uint32_t)__HAL_TIM_GET_COUNTER(&SYSTEM_TIM_US);
+    #if SYSTEM_TIM_US_32BIT
+    uint64_t time_us = (uint64_t)time_low | ((uint64_t)time_us_high_num << 32);
+    #else
+    uint64_t time_us = (uint64_t)time_low | ((uint64_t)time_us_high_num << 16);
+    #endif
+    return time_us;
 }
 
 inline uint32_t time_ms( void ){
-    return xTaskGetTickCount() * (1000/configTICK_RATE_HZ);
+    return time_us()/1000;
 }
 
 int32_t time_us_init( void ){
+    SYSTEM_TIM_US.PeriodElapsedCallback = time_us_timer_overflow;
     HAL_TIM_Base_Start(&SYSTEM_TIM_US);
     return 0;
 }
 
-void delay_us( uint32_t us ){
-    uint32_t start_us = (uint32_t)time_us();
-    while(((uint32_t)time_us() - start_us) < us){};
+void delay_us( uint64_t us ){
+    uint64_t start_us = time_us();
+    if(us > 1000){
+        uint32_t ms = us/1000;
+        delay(ms);
+    }
+    while((time_us() - start_us) < us){};
 }
 
 inline void delay( uint32_t ms ){
@@ -59,7 +76,6 @@ void sys_init( void ){
 
     res = shell_init();
     if(res == 0){
-        //xTaskCreate(task_shell, "Shell", 300, NULL, 100, &task_shell_handle);
         shell_log("[shell] init ok");
     }else{
         shell_log("[shell] init fault");
@@ -74,12 +90,11 @@ void sys_init( void ){
     
 	res = move_init();
     if(res == 0){
+        xTaskCreate(task_move, "Move", 1000, NULL, 3000, &task_move_handle);
         shell_log("[move] init ok");
     }else{
         shell_log("[move] init fault");
     }
-    // WARNING! Task started anyway, results of init ignored
-    xTaskCreate(task_move, "Move", 1000, NULL, 3000, &task_move_handle);
 
     res = collision_init(collision_sensors, COLLISION_SENSORS_COUNT);
     if(res == 0){
@@ -92,7 +107,7 @@ void sys_init( void ){
     //xTaskCreate(task_imu, "IMU", 1000, NULL, 3000, &task_imu_handle);
     xTaskCreate(task_app, "User app", 1000, NULL, 1000, &task_app_handle);
     vTaskStartScheduler();
-    
+
 
     while (1);
 }
@@ -120,13 +135,6 @@ void task_app( void *args ){
     shell_log("[system] user setup complite, start loop");
     while(1){
         core_loop();
-    }
-}
-
-void task_shell( void *args ){
-    while(1){
-        //shell_process();
-        vTaskDelay(10);
     }
 }
 

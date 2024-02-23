@@ -20,7 +20,8 @@
             "*.cxx": "cpp",
             "*.cc": "cpp",
             "cmath": "c",
-            "__bit_reference": "c"
+            "__bit_reference": "c",
+            "compare": "c"
         },
         "[yaml]": {
             "editor.insertSpaces": true,
