@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "lwshell/lwshell.h"
 #include "move.h"
 #include "shell.h"
 #include "main.h"

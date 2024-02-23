@@ -329,27 +329,6 @@
             "folders": []
           },
           {
-            "name": "lwshell",
-            "files": [
-              {
-                "path": "Libs/lwshell/src/lwshell/lwshell.c"
-              }
-            ],
-            "folders": []
-          },
-          {
-            "name": "mpu6500",
-            "files": [
-              {
-                "path": "Libs/mpu9250-master/src/driver_mpu9250.c"
-              },
-              {
-                "path": "Source/driver_mpu9250_interface.c"
-              }
-            ],
-            "folders": []
-          },
-          {
             "name": "PID",
             "files": [
               {
