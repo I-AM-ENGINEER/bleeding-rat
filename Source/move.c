@@ -8,7 +8,8 @@
 #include "stm32f4xx.h"
 
 static move_t movement;
-static bool move_process_mutex;
+static bool move_process_mutex = false;
+static float max_power = SERVO_DEFAULT_MAX_POWER;
 
 extern TIM_HandleTypeDef MOTOR_L_TIM;
 extern TIM_HandleTypeDef MOTOR_L_TIM;
@@ -55,7 +56,7 @@ static inline float move_mmps2rpm( float mmps ){
     return rpm;
 }
 
-void move_servos_permit( bool permission ){
+void move_permit( bool permission ){
     #ifdef MOVE_DEBUG
     if(permission){
         shell_log("[move] motors enabled");
@@ -67,7 +68,7 @@ void move_servos_permit( bool permission ){
     motord_enable(&movement.servo_bundle[SERVO_RIGHT].motord, permission);
 }
 
-void move_servos_power_set( float power_l, float power_r ){
+void move_power_set( float power_l, float power_r ){
     #ifdef MOVE_DEBUG
     shell_log("[move] motors power set: l: %.3f, r: %.3f", \
         power_l\
@@ -81,7 +82,7 @@ void move_servos_power_set( float power_l, float power_r ){
     servo_power_set(&movement.servo[SERVO_RIGHT], power_r);
 }
 
-void move_servos_speed_set( float speed_l, float speed_r ){
+void move_speed_set( float speed_l, float speed_r ){
     move_process_mutex = true;
     float rpm_l = move_mmps2rpm(speed_l);
     float rpm_r = move_mmps2rpm(speed_r);
@@ -113,14 +114,14 @@ void move_servos_speed_set( float speed_l, float speed_r ){
 
     // Если синхронизации нет, запуск двигателей без неё
     if(movement.sync_state == MOVE_SYNC_NONE){
-        servo_rpm_set(&movement.servo[SERVO_LEFT],  rpm_l, SERVO_MAX_POWER);
-        servo_rpm_set(&movement.servo[SERVO_RIGHT], rpm_r, SERVO_MAX_POWER);
+        servo_rpm_set(&movement.servo[SERVO_LEFT],  rpm_l, max_power);
+        servo_rpm_set(&movement.servo[SERVO_RIGHT], rpm_r, max_power);
     }
     move_process_mutex = false;
 }
 
 
-void move_servos_position_set( float position_l, float position_r, float max_speed ){
+void move_position_set( float position_l, float position_r, float max_speed ){
     move_process_mutex = true;
     float max_rpm = move_mmps2rpm(max_speed);
 
@@ -170,21 +171,80 @@ void move_servos_position_set( float position_l, float position_r, float max_spe
 
     // Если синхронизации нет, запуск двигателей без неё
     if(movement.sync_state == MOVE_SYNC_NONE){
-        servo_position_set(&movement.servo[SERVO_LEFT],  rotation_l, max_rpm, SERVO_MAX_POWER);
-        servo_position_set(&movement.servo[SERVO_RIGHT], rotation_r, max_rpm, SERVO_MAX_POWER);
+        servo_position_set(&movement.servo[SERVO_LEFT],  rotation_l, max_rpm, max_power);
+        servo_position_set(&movement.servo[SERVO_RIGHT], rotation_r, max_rpm, max_power);
     }
     move_process_mutex = false;
 }
 
-void move_servos_position_reset( void ){
+void move_position_reset( void ){
     move_process_mutex = true;
     servo_position_reset(&movement.servo[SERVO_LEFT]);
     servo_position_reset(&movement.servo[SERVO_RIGHT]);
     move_process_mutex = false;
 }
 
-servo_status_t move_servos_status_get( void ){
-    return SERVO_STATUS_DISABLES;
+void move_pid_speed_config( float kP, float kI, float kD ){
+    move_process_mutex = true;
+    PIDController_t pid_speed;
+    PIDController_Init(&pid_speed);
+    pid_speed.Kp        = SERVO_DEFAULT_PID_SPEED_KP;
+    pid_speed.Ki        = SERVO_DEFAULT_PID_SPEED_KI;
+    pid_speed.Kd        = SERVO_DEFAULT_PID_SPEED_KD;
+    pid_speed.tau       = SERVO_DEFAULT_PID_SPEED_TAU;
+    pid_speed.limMin    = -1.0f;
+    pid_speed.limMax    =  1.0f;
+    pid_speed.limMinInt = -1.0f;
+    pid_speed.limMaxInt =  1.0f;
+    pid_speed.T = 0.001f;
+    movement.servo_bundle[SERVO_LEFT].pid_speed  = pid_speed;
+    movement.servo_bundle[SERVO_RIGHT].pid_speed = pid_speed;
+    move_process_mutex = false;
+}
+
+void move_pid_position_config( float kP, float kI, float kD ){
+    move_process_mutex = true;
+    PIDController_t pid_position;
+    PIDController_Init(&pid_position);
+    pid_position.Kp         = SERVO_DEFAULT_PID_POSITION_KP;
+    pid_position.Ki         = SERVO_DEFAULT_PID_POSITION_KI;
+    pid_position.Kd         = SERVO_DEFAULT_PID_POSITION_KD;
+    pid_position.tau        = SERVO_DEFAULT_PID_POSITION_TAU;
+    pid_position.limMin     = -SERVO_MAXIMUM_RPM;
+    pid_position.limMax     =  SERVO_MAXIMUM_RPM;
+    pid_position.limMinInt  = -SERVO_MAXIMUM_RPM;
+    pid_position.limMaxInt  =  SERVO_MAXIMUM_RPM;
+    pid_position.T = 0.001f;
+    movement.servo_bundle[SERVO_LEFT].pid_distance  = pid_position;
+    movement.servo_bundle[SERVO_RIGHT].pid_distance = pid_position;
+    move_process_mutex = false;
+}
+
+void move_pid_sync_config( float kP, float kI, float kD ){
+    move_process_mutex = true;
+    PIDController_t pid_sync;
+    PIDController_Init(&pid_sync);
+    pid_sync.Kp         = SERVO_DEFAULT_PID_SYNC_KP;
+    pid_sync.Ki         = SERVO_DEFAULT_PID_SYNC_KI;
+    pid_sync.Kd         = SERVO_DEFAULT_PID_SYNC_KD;
+    pid_sync.tau        = SERVO_DEFAULT_PID_SYNC_TAU;
+    pid_sync.limMin     = -SERVO_MAXIMUM_RPM;
+    pid_sync.limMax     =  SERVO_MAXIMUM_RPM;
+    pid_sync.limMinInt  = -SERVO_MAXIMUM_RPM;
+    pid_sync.limMaxInt  =  SERVO_MAXIMUM_RPM;
+    pid_sync.T = 0.001f;
+    movement.pid_distance_sync = pid_sync;
+    move_process_mutex = false;
+}
+
+void move_max_power_set( float power ){
+    if(power > 1.0f){
+        max_power = 1.0f;
+    }else if(power < 0.0f){
+        max_power = 0.0f;
+    }else{
+        max_power = power;
+    }
 }
 
 void move_process( void ){
@@ -227,15 +287,15 @@ void move_process( void ){
         float servo_slave_rpm_new = servo_slave_rpm_target - servo_slave_rpm_offset;
 
         if(movement.sync_state == MOVE_SYNC_SPEED){
-            servo_rpm_set(&movement.servo[SERVO_SLAVE], servo_slave_rpm_new, SERVO_MAX_POWER);
-            servo_rpm_set(&movement.servo[SERVO_MASTER], servo_master_rpm_target, SERVO_MAX_POWER);
+            servo_rpm_set(&movement.servo[SERVO_SLAVE], servo_slave_rpm_new, max_power);
+            servo_rpm_set(&movement.servo[SERVO_MASTER], servo_master_rpm_target, max_power);
         }
 
         if(movement.sync_state == MOVE_SYNC_POSITION){
             float servo_master_position_target = movement.servo_bundle[SERVO_MASTER].rotation_target;
             float servo_slave_position_target  = movement.servo_bundle[SERVO_SLAVE].rotation_target;
-            servo_position_set(&movement.servo[SERVO_SLAVE], servo_slave_position_target, servo_slave_rpm_new, SERVO_MAX_POWER);
-            servo_position_set(&movement.servo[SERVO_MASTER], servo_master_position_target, servo_master_rpm_target, SERVO_MAX_POWER);
+            servo_position_set(&movement.servo[SERVO_SLAVE], servo_slave_position_target, servo_slave_rpm_new, max_power);
+            servo_position_set(&movement.servo[SERVO_MASTER], servo_master_position_target, servo_master_rpm_target, max_power);
         }
     }
     
@@ -286,34 +346,9 @@ int32_t move_init( void ){
     }
     
     // Инициализация ПИД серво (ООС по скорости)
-    PIDController_t pid_speed;
-    PIDController_Init(&pid_speed);
-    pid_speed.Kp        = SERVO_DEFAULT_PID_SPEED_KP;
-    pid_speed.Ki        = SERVO_DEFAULT_PID_SPEED_KI;
-    pid_speed.Kd        = SERVO_DEFAULT_PID_SPEED_KD;
-    pid_speed.tau       = SERVO_DEFAULT_PID_SPEED_TAU;
-    pid_speed.limMin    = -1.0f;
-    pid_speed.limMax    =  1.0f;
-    pid_speed.limMinInt = -1.0f;
-    pid_speed.limMaxInt =  1.0f;
-    pid_speed.T = 0.001f;
-    movement.servo_bundle[SERVO_LEFT].pid_speed  = pid_speed;
-    movement.servo_bundle[SERVO_RIGHT].pid_speed = pid_speed;
-
+    move_pid_speed_config( SERVO_DEFAULT_PID_SPEED_KP, SERVO_DEFAULT_PID_SPEED_KI, SERVO_DEFAULT_PID_SPEED_KD );
     // Инициализация ПИД серво (ООС по положению)
-    PIDController_t pid_position;
-    PIDController_Init(&pid_position);
-    pid_position.Kp         = SERVO_DEFAULT_PID_POSITION_KP;
-    pid_position.Ki         = SERVO_DEFAULT_PID_POSITION_KI;
-    pid_position.Kd         = SERVO_DEFAULT_PID_POSITION_KD;
-    pid_position.tau        = SERVO_DEFAULT_PID_POSITION_TAU;
-    pid_position.limMin     = -SERVO_MAXIMUM_RPM;
-    pid_position.limMax     =  SERVO_MAXIMUM_RPM;
-    pid_position.limMinInt  = -SERVO_MAXIMUM_RPM;
-    pid_position.limMaxInt  =  SERVO_MAXIMUM_RPM;
-    pid_position.T = 0.001f;
-    movement.servo_bundle[SERVO_LEFT].pid_distance  = pid_position;
-    movement.servo_bundle[SERVO_RIGHT].pid_distance = pid_position;
+    move_pid_position_config( SERVO_DEFAULT_PID_POSITION_KP, SERVO_DEFAULT_PID_POSITION_KI, SERVO_DEFAULT_PID_POSITION_KD );
 
     // Инициалиизация серводвигателей
     tmp_res = servo_init(&movement.servo[SERVO_LEFT],\
@@ -341,18 +376,7 @@ int32_t move_init( void ){
     }
 
     // Инициализация ПИД синхронизация серводвигателей
-    PIDController_t pid_sync;
-    PIDController_Init(&pid_sync);
-    pid_sync.Kp         = SERVO_DEFAULT_PID_SYNC_KP;
-    pid_sync.Ki         = SERVO_DEFAULT_PID_SYNC_KI;
-    pid_sync.Kd         = SERVO_DEFAULT_PID_SYNC_KD;
-    pid_sync.tau        = SERVO_DEFAULT_PID_SYNC_TAU;
-    pid_sync.limMin     = -SERVO_MAXIMUM_RPM;
-    pid_sync.limMax     =  SERVO_MAXIMUM_RPM;
-    pid_sync.limMinInt  = -SERVO_MAXIMUM_RPM;
-    pid_sync.limMaxInt  =  SERVO_MAXIMUM_RPM;
-    pid_sync.T = 0.001f;
-    movement.pid_distance_sync = pid_sync;
+    move_pid_sync_config( SERVO_DEFAULT_PID_SYNC_KP, SERVO_DEFAULT_PID_SYNC_KI, SERVO_DEFAULT_PID_SYNC_KD );
     
     return res;
 }
