@@ -17,4 +17,5 @@
 
 version: "1.0"
 files: null
-virtualPathFiles: {}
+virtualPathFiles:
+    <virtual_root>/Core/ws2812b.c: -Ofast

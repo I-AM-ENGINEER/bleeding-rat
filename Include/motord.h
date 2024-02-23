@@ -21,7 +21,7 @@ typedef struct{
     uint32_t pin1_tim_channel;
     uint32_t pin2_tim_channel;
     GPIO_TypeDef* enable_port;
-    uint32_t      enable_pin;
+    uint16_t      enable_pin;
     float duty;
     motord_decay_mode_t decay_mode;
 } motord_t;

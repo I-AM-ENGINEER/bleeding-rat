@@ -87,6 +87,9 @@
           },
           {
             "path": "Source/system.c"
+          },
+          {
+            "path": "Source/ws2812b.c"
           }
         ],
         "folders": []
