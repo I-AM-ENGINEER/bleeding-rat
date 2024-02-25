@@ -49,6 +49,7 @@ void shell_log( const char *format, ... ){
     uint64_t tick = SHELL_TIME_US_FUNCTION();
     uint32_t us = tick%1000000;
     uint32_t s  = tick/1000000;
+    // Keil compiler mark as warning, false alarm
     printf("[%6lu.%.6lu] ", s, us);
     vprintf(format, vargs);
     printf("\r\n");

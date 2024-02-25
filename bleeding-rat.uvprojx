@@ -1,7 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
 <Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_projx.xsd">
+
   <SchemaVersion>2.1</SchemaVersion>
+
   <Header>### uVision Project, (C) Keil Software</Header>
+
   <Targets>
     <Target>
       <TargetName>bleeding-rat</TargetName>
@@ -12,33 +15,33 @@
       <uAC6>1</uAC6>
       <TargetOption>
         <TargetCommonOption>
-          <Device/>
-          <Vendor/>
+          <Device>STM32F405RGTx</Device>
+          <Vendor>STMicroelectronics</Vendor>
           <PackID>Keil.STM32F4xx_DFP.2.17.1</PackID>
           <PackURL>https://www.keil.com/pack/</PackURL>
-          <Cpu>IRAM(0x20000000-0x2001BFFF) IRAM2(0x2001C000-0x2001FFFF) IROM(0x8000000-0x80FFFFF) CLOCK(25000000) FPU2 CPUTYPE(&quot;Cortex-M4&quot;) TZ</Cpu>
-          <FlashUtilSpec/>
-          <StartupFile/>
-          <FlashDriverDll/>
+          <Cpu>IRAM(0x20000000,0x00020000) IRAM2(0x10000000,0x00010000) IROM(0x08000000,0x00100000) CPUTYPE("Cortex-M4") FPU2 CLOCK(12000000) ELITTLE</Cpu>
+          <FlashUtilSpec></FlashUtilSpec>
+          <StartupFile></StartupFile>
+          <FlashDriverDll>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F405RGTx$CMSIS\Flash\STM32F4xx_1024.FLM))</FlashDriverDll>
           <DeviceId>0</DeviceId>
-          <RegisterFile/>
-          <MemoryEnv/>
-          <Cmp/>
-          <Asm/>
-          <Linker/>
-          <OHString/>
-          <InfinionOptionDll/>
-          <SLE66CMisc/>
-          <SLE66AMisc/>
-          <SLE66LinkerMisc/>
+          <RegisterFile>$$Device:STM32F405RGTx$Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h</RegisterFile>
+          <MemoryEnv></MemoryEnv>
+          <Cmp></Cmp>
+          <Asm></Asm>
+          <Linker></Linker>
+          <OHString></OHString>
+          <InfinionOptionDll></InfinionOptionDll>
+          <SLE66CMisc></SLE66CMisc>
+          <SLE66AMisc></SLE66AMisc>
+          <SLE66LinkerMisc></SLE66LinkerMisc>
           <SFDFile>$$Device:STM32F405RGTx$CMSIS\SVD\STM32F405.svd</SFDFile>
           <bCustSvd>0</bCustSvd>
           <UseEnv>0</UseEnv>
-          <BinPath/>
-          <IncludePath/>
-          <LibPath/>
-          <RegisterFilePath/>
-          <DBRegisterFilePath/>
+          <BinPath></BinPath>
+          <IncludePath></IncludePath>
+          <LibPath></LibPath>
+          <RegisterFilePath></RegisterFilePath>
+          <DBRegisterFilePath></DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -53,15 +56,15 @@
           <CreateHexFile>1</CreateHexFile>
           <DebugInformation>1</DebugInformation>
           <BrowseInformation>1</BrowseInformation>
-          <ListingPath>.\build\Keil\</ListingPath>
+          <ListingPath></ListingPath>
           <HexFormatSelection>1</HexFormatSelection>
           <Merge32K>0</Merge32K>
           <CreateBatchFile>0</CreateBatchFile>
           <BeforeCompile>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name/>
-            <UserProg2Name/>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopU1X>0</nStopU1X>
@@ -70,8 +73,8 @@
           <BeforeMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name/>
-            <UserProg2Name/>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopB1X>0</nStopB1X>
@@ -80,15 +83,15 @@
           <AfterMake>
             <RunUserProg1>0</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name/>
-            <UserProg2Name/>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
             <nStopA1X>0</nStopA1X>
             <nStopA2X>0</nStopA2X>
           </AfterMake>
           <SelectedForBatchBuild>1</SelectedForBatchBuild>
-          <SVCSIdString/>
+          <SVCSIdString></SVCSIdString>
         </TargetCommonOption>
         <CommonProperty>
           <UseCPPCompiler>0</UseCPPCompiler>
@@ -102,17 +105,17 @@
           <AssembleAssemblyFile>0</AssembleAssemblyFile>
           <PublicsOnly>0</PublicsOnly>
           <StopOnExitCode>3</StopOnExitCode>
-          <CustomArgument/>
-          <IncludeLibraryModules/>
+          <CustomArgument></CustomArgument>
+          <IncludeLibraryModules></IncludeLibraryModules>
           <ComprImg>0</ComprImg>
         </CommonProperty>
         <DllOption>
           <SimDllName>SARMCM3.DLL</SimDllName>
-          <SimDllArguments>-REMAP -MPU</SimDllArguments>
+          <SimDllArguments> -REMAP -MPU</SimDllArguments>
           <SimDlgDll>DCM.DLL</SimDlgDll>
           <SimDlgDllArguments>-pCM4</SimDlgDllArguments>
           <TargetDllName>SARMCM3.DLL</TargetDllName>
-          <TargetDllArguments>-MPU</TargetDllArguments>
+          <TargetDllArguments> -MPU</TargetDllArguments>
           <TargetDlgDll>TCM.DLL</TargetDlgDll>
           <TargetDlgDllArguments>-pCM4</TargetDlgDllArguments>
         </DllOption>
@@ -136,11 +139,11 @@
           </Flash1>
           <bUseTDR>1</bUseTDR>
           <Flash2>BIN\UL2CM3.DLL</Flash2>
-          <Flash3>&quot;&quot; ()</Flash3>
-          <Flash4/>
-          <pFcarmOut/>
-          <pFcarmGrp/>
-          <pFcArmRoot/>
+          <Flash3></Flash3>
+          <Flash4></Flash4>
+          <pFcarmOut></pFcarmOut>
+          <pFcarmGrp></pFcarmGrp>
+          <pFcArmRoot></pFcArmRoot>
           <FcArmLst>0</FcArmLst>
         </Utilities>
         <TargetArmAds>
@@ -172,8 +175,8 @@
             <AdsLsxf>1</AdsLsxf>
             <RvctClst>0</RvctClst>
             <GenPPlst>0</GenPPlst>
-            <AdsCpuType>&quot;Cortex-M4&quot;</AdsCpuType>
-            <RvctDeviceName/>
+            <AdsCpuType>"Cortex-M4"</AdsCpuType>
+            <RvctDeviceName></RvctDeviceName>
             <mOS>0</mOS>
             <uocRom>0</uocRom>
             <uocRam>0</uocRam>
@@ -187,12 +190,12 @@
             <nBranchProt>0</nBranchProt>
             <hadIRAM2>1</hadIRAM2>
             <hadIROM2>0</hadIROM2>
-            <StupSel>1</StupSel>
-            <useUlib>1</useUlib>
+            <StupSel>8</StupSel>
+            <useUlib>0</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <nSecure>0</nSecure>
-            <RoSelD>0</RoSelD>
+            <RoSelD>3</RoSelD>
             <RwSelD>4</RwSelD>
             <CodeSel>0</CodeSel>
             <OptFeed>0</OptFeed>
@@ -201,15 +204,15 @@
             <NoZi3>0</NoZi3>
             <NoZi4>0</NoZi4>
             <NoZi5>0</NoZi5>
-            <Ro1Chk>1</Ro1Chk>
+            <Ro1Chk>0</Ro1Chk>
             <Ro2Chk>0</Ro2Chk>
             <Ro3Chk>0</Ro3Chk>
-            <Ir1Chk>0</Ir1Chk>
+            <Ir1Chk>1</Ir1Chk>
             <Ir2Chk>0</Ir2Chk>
-            <Ra1Chk>1</Ra1Chk>
+            <Ra1Chk>0</Ra1Chk>
             <Ra2Chk>0</Ra2Chk>
             <Ra3Chk>0</Ra3Chk>
-            <Im1Chk>0</Im1Chk>
+            <Im1Chk>1</Im1Chk>
             <Im2Chk>0</Im2Chk>
             <OnChipMemories>
               <Ocm1>
@@ -245,7 +248,7 @@
               <IRAM>
                 <Type>0</Type>
                 <StartAddress>0x20000000</StartAddress>
-                <Size>0x1c000</Size>
+                <Size>0x20000</Size>
               </IRAM>
               <IROM>
                 <Type>1</Type>
@@ -259,8 +262,8 @@
               </XRAM>
               <OCR_RVCT1>
                 <Type>1</Type>
-                <StartAddress>0x08000000</StartAddress>
-                <Size>0x100000</Size>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
               </OCR_RVCT1>
               <OCR_RVCT2>
                 <Type>1</Type>
@@ -274,8 +277,8 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x8000000</StartAddress>
+                <Size>0x100000</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
@@ -284,8 +287,8 @@
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>
-                <StartAddress>0x20000000</StartAddress>
-                <Size>0x30000</Size>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
               </OCR_RVCT6>
               <OCR_RVCT7>
                 <Type>0</Type>
@@ -299,20 +302,20 @@
               </OCR_RVCT8>
               <OCR_RVCT9>
                 <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x20000000</StartAddress>
+                <Size>0x20000</Size>
               </OCR_RVCT9>
               <OCR_RVCT10>
                 <Type>0</Type>
-                <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <StartAddress>0x10000000</StartAddress>
+                <Size>0x10000</Size>
               </OCR_RVCT10>
             </OnChipMemories>
-            <RvctStartVector/>
+            <RvctStartVector></RvctStartVector>
           </ArmAdsMisc>
           <Cads>
             <interw>1</interw>
-            <Optim>1</Optim>
+            <Optim>2</Optim>
             <oTime>0</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>1</OneElfS>
@@ -335,10 +338,10 @@
             <v6WtE>0</v6WtE>
             <v6Rtti>0</v6Rtti>
             <VariousControls>
-              <MiscControls/>
+              <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F405xx</Define>
-              <Undefine/>
-              <IncludePath>STM32Cube\Core\Inc;STM32Cube\Drivers\STM32F4xx_HAL_Driver\Inc;STM32Cube\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy;STM32Cube\Drivers\CMSIS\Device\ST\STM32F4xx\Include;STM32Cube\Drivers\CMSIS\Include;Include;.cmsis\include;RTE\_bleeding-rat;.eide\deps;Libs\lwshell\src\include;Libs\lwrb\src\include;STM32Cube\Middlewares\Third_Party\FreeRTOS\Source\include;STM32Cube\Middlewares\Third_Party\FreeRTOS\Source\CMSIS_RTOS_V2;STM32Cube\Middlewares\Third_Party\FreeRTOS\Source\portable\GCC\ARM_CM4F</IncludePath>
+              <Undefine></Undefine>
+              <IncludePath>STM32Cube\Core\Inc;STM32Cube\Drivers\STM32F4xx_HAL_Driver\Inc;STM32Cube\Drivers\STM32F4xx_HAL_Driver\Inc\Legacy;STM32Cube\Drivers\CMSIS\Device\ST\STM32F4xx\Include;STM32Cube\Drivers\CMSIS\Include;Include;Libs\lwshell\src\include;Libs\lwrb\src\include;Libs\PID-master;Libs\FreeRTOS\Source\include;Libs\FreeRTOS\Source\CMSIS_RTOS_V2;Libs\FreeRTOS\Source\portable\GCC\ARM_CM4F;App</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -353,39 +356,104 @@
             <useXO>0</useXO>
             <ClangAsOpt>1</ClangAsOpt>
             <VariousControls>
-              <MiscControls/>
+              <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F405xx</Define>
-              <Undefine/>
-              <IncludePath/>
+              <Undefine></Undefine>
+              <IncludePath></IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>1</umfTarg>
+            <umfTarg>0</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
             <RepFail>1</RepFail>
             <useFile>0</useFile>
-            <TextAddressRange/>
-            <DataAddressRange/>
-            <pXoBase/>
-            <ScatterFile>&lt;YOUR_SCATTER_FILE&gt;.sct</ScatterFile>
-            <IncludeLibs/>
-            <IncludeLibsPath/>
-            <Misc/>
-            <LinkerInputFile/>
-            <DisabledWarnings/>
+            <TextAddressRange></TextAddressRange>
+            <DataAddressRange></DataAddressRange>
+            <pXoBase></pXoBase>
+            <ScatterFile>.\STM32Cube\MDK-ARM\cube_generated\cube_generated.sct</ScatterFile>
+            <IncludeLibs></IncludeLibs>
+            <IncludeLibsPath></IncludeLibsPath>
+            <Misc></Misc>
+            <LinkerInputFile></LinkerInputFile>
+            <DisabledWarnings></DisabledWarnings>
           </LDads>
         </TargetArmAds>
       </TargetOption>
       <Groups>
         <Group>
-          <GroupName>libs/lwshell</GroupName>
+          <GroupName>SOURCE</GroupName>
           <Files>
             <File>
-              <FileName>lwshell.c</FileName>
+              <FileName>collision.c</FileName>
               <FileType>1</FileType>
-              <FilePath>Libs/lwshell/src/lwshell/lwshell.c</FilePath>
+              <FilePath>Source/collision.c</FilePath>
+            </File>
+            <File>
+              <FileName>encoderd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/encoderd.c</FilePath>
+            </File>
+            <File>
+              <FileName>freertos.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/freertos.c</FilePath>
+            </File>
+            <File>
+              <FileName>imu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/imu.c</FilePath>
+            </File>
+            <File>
+              <FileName>motord.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/motord.c</FilePath>
+            </File>
+            <File>
+              <FileName>move.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/move.c</FilePath>
+            </File>
+            <File>
+              <FileName>servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>shell.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/shell.c</FilePath>
+            </File>
+            <File>
+              <FileName>system.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/system.c</FilePath>
+            </File>
+            <File>
+              <FileName>ws2812b.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Source/ws2812b.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>APP</GroupName>
+          <Files>
+            <File>
+              <FileName>core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>App/core.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>libs/PID</GroupName>
+          <Files>
+            <File>
+              <FileName>PID.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>Libs/PID-master/PID.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -400,57 +468,57 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>FreeRTOS</GroupName>
+          <GroupName>libs/FreeRTOS</GroupName>
           <Files>
             <File>
               <FileName>cmsis_os2.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.c</FilePath>
             </File>
             <File>
               <FileName>croutine.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/croutine.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/croutine.c</FilePath>
             </File>
             <File>
               <FileName>event_groups.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/event_groups.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/event_groups.c</FilePath>
             </File>
             <File>
               <FileName>list.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/list.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/list.c</FilePath>
             </File>
             <File>
               <FileName>port.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c</FilePath>
             </File>
             <File>
               <FileName>heap_4.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/portable/MemMang/heap_4.c</FilePath>
             </File>
             <File>
               <FileName>queue.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/queue.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/queue.c</FilePath>
             </File>
             <File>
               <FileName>stream_buffer.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/stream_buffer.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/stream_buffer.c</FilePath>
             </File>
             <File>
               <FileName>tasks.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/tasks.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/tasks.c</FilePath>
             </File>
             <File>
               <FileName>timers.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Middlewares/Third_Party/FreeRTOS/Source/timers.c</FilePath>
+              <FilePath>Libs/FreeRTOS/Source/timers.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -458,19 +526,14 @@
           <GroupName>Drivers/STM32F4xx_HAL_Driver</GroupName>
           <Files>
             <File>
-              <FileName>stm32f4xx_hal.c</FileName>
+              <FileName>stm32f4xx_hal_adc_ex.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_adc_ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_adc_ex.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_can.c</FileName>
@@ -493,19 +556,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_crc.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_cryp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_cryp_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp_ex.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_dac.c</FileName>
+              <FileName>stm32f4xx_hal_cryp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cryp.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_dac_ex.c</FileName>
@@ -513,9 +571,9 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac_ex.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_dcmi.c</FileName>
+              <FileName>stm32f4xx_hal_dac.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dac.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_dcmi_ex.c</FileName>
@@ -523,19 +581,24 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi_ex.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_dcmi.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dcmi.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_hal_dfsdm.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dfsdm.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_dma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_dma_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_dma.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_dma2d.c</FileName>
@@ -558,11 +621,6 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_flash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_flash_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c</FilePath>
@@ -573,9 +631,9 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_fmpi2c.c</FileName>
+              <FileName>stm32f4xx_hal_flash.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_fmpi2c_ex.c</FileName>
@@ -583,9 +641,9 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c_ex.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_fmpsmbus.c</FileName>
+              <FileName>stm32f4xx_hal_fmpi2c.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpsmbus.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpi2c.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_fmpsmbus_ex.c</FileName>
@@ -593,14 +651,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpsmbus_ex.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_fmpsmbus.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_fmpsmbus.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_hal_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_hash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_hash_ex.c</FileName>
@@ -608,14 +666,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash_ex.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_hash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hash.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_hal_hcd.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_i2c.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_i2c_ex.c</FileName>
@@ -623,14 +681,19 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_i2s.c</FileName>
+              <FileName>stm32f4xx_hal_i2c.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_i2s_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_i2s.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_irda.c</FileName>
@@ -648,14 +711,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_lptim.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_ltdc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_ltdc_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_ltdc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_ltdc.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_mmc.c</FileName>
@@ -678,19 +741,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pccard.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_pcd.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_pcd_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd_ex.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_pwr.c</FileName>
+              <FileName>stm32f4xx_hal_pcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pcd.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_pwr_ex.c</FileName>
@@ -698,14 +756,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_pwr.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_hal_qspi.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_qspi.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_rcc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_rcc_ex.c</FileName>
@@ -713,14 +771,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f4xx_hal_rcc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f4xx_hal_rng.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rng.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f4xx_hal_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_rtc_ex.c</FileName>
@@ -728,14 +786,19 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc_ex.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_sai.c</FileName>
+              <FileName>stm32f4xx_hal_rtc.c</FileName>
               <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c</FilePath>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rtc.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_sai_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_sai.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sai.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_sd.c</FileName>
@@ -773,14 +836,14 @@
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_sram.c</FilePath>
             </File>
             <File>
-              <FileName>stm32f4xx_hal_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f4xx_hal_tim_ex.c</FileName>
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4xx_hal_tim.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c</FilePath>
             </File>
             <File>
               <FileName>stm32f4xx_hal_uart.c</FileName>
@@ -797,6 +860,11 @@
               <FileType>1</FileType>
               <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_wwdg.c</FilePath>
             </File>
+            <File>
+              <FileName>stm32f4xx_hal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>STM32Cube/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -810,43 +878,8 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Core</GroupName>
-          <Files>
-            <File>
-              <FileName>core.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source/core.c</FilePath>
-            </File>
-            <File>
-              <FileName>motord.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source/motord.c</FilePath>
-            </File>
-            <File>
-              <FileName>move.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source/move.c</FilePath>
-            </File>
-            <File>
-              <FileName>shell.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source/shell.c</FilePath>
-            </File>
-            <File>
-              <FileName>system.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>Source/system.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>Application/User/Generated</GroupName>
           <Files>
-            <File>
-              <FileName>freertos.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>STM32Cube/Core/Src/freertos.c</FilePath>
-            </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
@@ -875,13 +908,17 @@
             <File>
               <FileName>startup_stm32f405xx.s</FileName>
               <FileType>2</FileType>
-              <FilePath>STM32Cube/MDK-ARM/startup_stm32f405xx.s</FilePath>
+              <FilePath>.\STM32Cube\MDK-ARM\startup_stm32f405xx.s</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>
   </Targets>
+
   <RTE>
     <apis/>
     <components>
@@ -894,6 +931,7 @@
     </components>
     <files/>
   </RTE>
+
   <LayerInfo>
     <Layers>
       <Layer>
@@ -902,4 +940,5 @@
       </Layer>
     </Layers>
   </LayerInfo>
+
 </Project>
