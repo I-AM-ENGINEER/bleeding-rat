@@ -15,11 +15,11 @@ typedef enum {
 } collision_state_t;
 
 typedef struct{
-    uint16_t value_current;
-    uint16_t value_last;
+    volatile uint16_t value_current;
+    volatile uint16_t value_last;
+    volatile collision_state_t state;
     uint16_t threshold_engage;
     uint16_t threshold_disengage;
-    collision_state_t state;
 } collision_sensor_t;
 
 /// @brief Тип функции обратного вызова для обработки событий датчиков столкновения
