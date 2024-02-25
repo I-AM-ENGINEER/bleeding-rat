@@ -150,7 +150,7 @@ void task_collision( void *args ){
             continue;
         }
         for(uint32_t i = 0; i < COLLISION_SENSORS_COUNT; i++){
-            collision_process(adc_buffer[i], i);
+            collision_process(i, adc_buffer[i]);
         }
     }
 }

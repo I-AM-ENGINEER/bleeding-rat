@@ -15,16 +15,16 @@ const uint16_t colision_sensor_num = 4;
 void core_init( void ){
     shell_log("start object detection example");
     // Настройка уровней срабатывания компаратора сенсоров препядствия
-	collision_sensor_set_comparator(colision_sensor_num, engage_threshold, disengage_threshold);
+	collision_set_comparator(colision_sensor_num, engage_threshold, disengage_threshold);
 }
 
 void core_loop( void ){
     // Ждем, пока перед сенсором не появится препядствие
-	while(collision_sensor_get_state(colision_sensor_num) == COLLISION_STATE_DISENGAGE){ };
+	while(collision_get_state(colision_sensor_num) == COLLISION_STATE_DISENGAGE){ };
     // Вывод сообщения об обнаружении барьера
     shell_log("barrier engage");
     // Ждем, пока перед сенсором исчезнет препядствие
-	while(collision_sensor_get_state(colision_sensor_num) == COLLISION_STATE_ENGAGE){ };    
+	while(collision_get_state(colision_sensor_num) == COLLISION_STATE_ENGAGE){ };    
     // Вывод сообщения об исчезновении барьера
     shell_log("barrier disengage");
 }

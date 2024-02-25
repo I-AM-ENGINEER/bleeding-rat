@@ -7,7 +7,7 @@ const uint16_t engage_threshold = 150;
 const uint16_t disengage_threshold = 100;
 
 // Функция, которая будет вызываться при изменении состояния любого сенсора
-void collision_event( uint16_t sensor_num, collision_sensor_state_t event_type ){
+void collision_event( uint16_t sensor_num, collision_state_t event_type ){
 	if(event_type == COLLISION_STATE_ENGAGE){
 		shell_log("sensor %hu engage", sensor_num);
 	}else{
@@ -22,11 +22,11 @@ void core_init( void ){
 	collision_attach(collision_event);
     
 	// Настройка уровней срабатывания компараторов всех сенсоров препядствий
-	collision_sensor_set_comparator(0, engage_threshold, disengage_threshold);
-	collision_sensor_set_comparator(1, engage_threshold, disengage_threshold);
-	collision_sensor_set_comparator(2, engage_threshold, disengage_threshold);
-	collision_sensor_set_comparator(3, engage_threshold, disengage_threshold);
-	collision_sensor_set_comparator(4, engage_threshold, disengage_threshold);
+	collision_set_comparator(0, engage_threshold, disengage_threshold);
+	collision_set_comparator(1, engage_threshold, disengage_threshold);
+	collision_set_comparator(2, engage_threshold, disengage_threshold);
+	collision_set_comparator(3, engage_threshold, disengage_threshold);
+	collision_set_comparator(4, engage_threshold, disengage_threshold);
 }
 
 void core_loop( void ){
